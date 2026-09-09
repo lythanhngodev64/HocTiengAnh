@@ -1,17 +1,18 @@
 # English Garden
 
-Trang học tiếng Anh cho trẻ em với **22 từ thuộc 4 chủ đề**: Xung quanh bé, Con vật, Đồ ăn và Trường học. Bé có thể xem tranh, nghe từng từ, nghe chậm hai lần và chơi trò chọn đúng hình. Trang chạy hoàn toàn tĩnh: không cần đăng nhập, không lưu dữ liệu của trẻ và không cần máy chủ riêng.
+Trang học tiếng Anh cho trẻ em với **120 từ thuộc 12 chủ đề gần gũi**: Phòng ngủ, Phòng khách, Sân vườn, Vệ sinh, Nhà bếp, Gia đình, Cơ thể, Quần áo, Con vật, Đồ ăn, Trường học và Đồ chơi. Bé có thể xem tranh, nghe từng từ, nghe chậm hai lần và chơi trò chọn đúng hình. Trang chạy hoàn toàn tĩnh: không cần đăng nhập, không lưu dữ liệu của trẻ và không cần máy chủ riêng.
 
 ## Điều bé có thể làm
 
 - Chạm vào từng tranh ở “Góc từ vựng” để nghe từ tiếng Anh.
 - Chơi nghe – chọn hình với đáp án được xáo vị trí ở mỗi lượt.
 - Dùng nút **Nghe chậm** để từ được đọc hai lần, chậm hơn.
+- Làm bài kiểm tra 10 câu cho từng chủ đề và nhận bảng điểm lớn, màu sắc thay đổi theo kết quả.
 - Tích sao và huy hiệu theo chủ đề; tiến độ chỉ được lưu trong trình duyệt trên chính máy đó.
 
 ## Giọng đọc OpenAI
 
-Trang hỗ trợ các tệp MP3 tạo trước bằng OpenAI `gpt-4o-mini-tts`, giọng `marin`. Mỗi từ có một bản nghe thường và một bản nghe chậm hai lần. Khi các tệp này chưa được tạo, trang mới dùng giọng tiếng Anh có sẵn của trình duyệt làm dự phòng.
+Trang hỗ trợ các tệp MP3 tạo trước bằng OpenAI `gpt-4o-mini-tts`, giọng `coral`. Mỗi từ có một bản nghe thường và một bản nghe chậm hai lần. Khi các tệp này chưa được tạo, trang mới dùng giọng tiếng Anh có sẵn của trình duyệt làm dự phòng.
 
 Để tạo đủ tệp âm thanh, cần một OpenAI API key. Đây là khóa dành cho OpenAI API, tách biệt với việc đăng nhập hoặc đăng ký ChatGPT. Không dán khóa vào mã nguồn hay đưa khóa lên GitHub.
 
@@ -21,7 +22,7 @@ Trong thư mục dự án, chạy:
 npm run audio:generate
 ~~~
 
-Trước khi chạy, hãy sao chép riêng chuỗi khóa bắt đầu bằng `sk-`. Lệnh sẽ yêu cầu bạn nhấn Enter rồi tự đọc khóa từ clipboard, không hiển thị khóa trên màn hình. Sau đó lệnh tạo 44 tệp MP3 trong `public/audio/openai-coral`. Chạy lại trang sau khi hoàn tất. Trang sẽ tự chuyển sang **OpenAI · Coral** và hiển thị thông báo rằng đây là giọng AI.
+Trước khi chạy, hãy sao chép riêng chuỗi khóa bắt đầu bằng `sk-`. Lệnh sẽ yêu cầu bạn nhấn Enter rồi tự đọc khóa từ clipboard, không hiển thị khóa trên màn hình. Sau đó lệnh tạo 240 tệp MP3 trong `public/audio/openai-coral`. Chạy lại trang sau khi hoàn tất. Trang sẽ tự chuyển sang **OpenAI · Coral** và hiển thị thông báo rằng đây là giọng AI.
 
 Để tạo 4 từ nghe thử bằng `gpt-4o-mini-tts` với giọng **Cedar** và cách đọc tự nhiên hơn, chạy:
 

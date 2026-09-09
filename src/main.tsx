@@ -329,6 +329,17 @@ function EnglishGarden() {
     };
   }, [assetBase]);
 
+  useEffect(() => {
+    const activeTab = document.querySelector<HTMLElement>(
+      '.theme-trigger[aria-selected="true"]',
+    );
+    activeTab?.scrollIntoView({
+      behavior: 'auto',
+      block: 'nearest',
+      inline: 'nearest',
+    });
+  }, [activeThemeId]);
+
   useEffect(
     () => () => {
       const audio = activeAudio.current;

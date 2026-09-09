@@ -91,7 +91,7 @@
     { "id": "leg", "themeId": "body", "word": "leg", "meaning": "chân", "imageFile": "body.png", "index": 8 },
     { "id": "foot", "themeId": "body", "word": "foot", "meaning": "bàn chân", "imageFile": "body.png", "index": 9 },
 
-    { "id": "shirt", "themeId": "clothes", "word": "shirt", "meaning": "áo sơ mi", "imageFile": "clothes.png", "index": 0 },
+    { "id": "shirt", "themeId": "clothes", "word": "shirt", "meaning": "cái áo", "imageFile": "clothes.png", "index": 0 },
     { "id": "pants", "themeId": "clothes", "word": "pants", "meaning": "quần dài", "imageFile": "clothes.png", "index": 1 },
     { "id": "dress", "themeId": "clothes", "word": "dress", "meaning": "váy liền", "imageFile": "clothes.png", "index": 2 },
     { "id": "skirt", "themeId": "clothes", "word": "skirt", "meaning": "chân váy", "imageFile": "clothes.png", "index": 3 },
