@@ -1,0 +1,31 @@
+{
+  "provider": "OpenAI",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "purpose": "website-audio",
+  "disclosure": "Giọng đọc AI do OpenAI tạo, không phải giọng người thật.",
+  "words": [
+    "door",
+    "gate",
+    "desk",
+    "garden",
+    "cat",
+    "dog",
+    "rabbit",
+    "bird",
+    "fish",
+    "turtle",
+    "apple",
+    "banana",
+    "bread",
+    "milk",
+    "egg",
+    "cake",
+    "book",
+    "pencil",
+    "backpack",
+    "chair",
+    "ruler",
+    "clock"
+  ]
+}

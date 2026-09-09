@@ -1,0 +1,13 @@
+{
+  "provider": "OpenAI",
+  "model": "gpt-4o-mini-tts",
+  "voice": "coral",
+  "purpose": "listening-sample",
+  "disclosure": "Giọng đọc AI do OpenAI tạo, không phải giọng người thật.",
+  "words": [
+    "garden",
+    "cat",
+    "turtle",
+    "backpack"
+  ]
+}
