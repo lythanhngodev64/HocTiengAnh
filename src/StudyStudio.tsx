@@ -1,4 +1,12 @@
 import { useMemo, useRef, useState } from 'react';
+import {
+  BookOpen,
+  Compass,
+  Play,
+  Volume2,
+  RefreshCw,
+  Check,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -170,12 +178,17 @@ export function StudyStudio(props: Props) {
               : `${theme.icon} ${theme.label}`}
           </h1>
         </div>
-        <div className="study-toolbar">
-          <Button variant="outline" onClick={() => request(setup)}>
-            Bài học nhỏ
+        <div className="study-toolbar study-view-switch" aria-label="Cách học">
+          <Button
+            variant="outline"
+            aria-pressed={stage !== 'rooms'}
+            onClick={() => request(setup)}
+          >
+            <BookOpen aria-hidden="true" /> Bài học nhỏ
           </Button>
           <Button
             variant="outline"
+            aria-pressed={stage === 'rooms'}
             onClick={() =>
               request(() => {
                 props.onDirty(false);
@@ -183,79 +196,91 @@ export function StudyStudio(props: Props) {
               })
             }
           >
-            Khám phá căn phòng
+            <Compass aria-hidden="true" /> Khám phá căn phòng
           </Button>
         </div>
       </div>
       {stage === 'setup' && (
-        <div className="study-setup">
-          <h2>Mỗi lần một chút, bé học thật vui!</h2>
-          <p>Làm quen với tối đa 5 từ, rồi cùng chơi nghe – chọn hình.</p>
-          <div className="study-toolbar">
-            <Button
-              variant="outline"
-              onClick={() => {
-                setGroupId(theme.groupId);
-                setPicker(true);
-              }}
-            >
-              Đổi chủ đề
-            </Button>
-            <fieldset>
-              <legend>Số hình lựa chọn</legend>
-              {[2, 3, 4].map((n) => (
+        <div className={`study-setup ${showDemo ? 'has-demo' : ''}`}>
+          <div className="study-setup-main">
+            <h2>Mỗi lần một chút, bé học thật vui!</h2>
+            <p>Làm quen với tối đa 5 từ, rồi cùng chơi nghe – chọn hình.</p>
+            <div className="study-settings">
+              <div className="study-setting">
+                <span className="study-setting-label">Chủ đề</span>
                 <Button
-                  key={n}
                   variant="outline"
-                  aria-pressed={count === n}
                   onClick={() => {
-                    setCount(n);
-                    props.onCountChange(n);
+                    setGroupId(theme.groupId);
+                    setPicker(true);
                   }}
                 >
-                  {n} hình
+                  <RefreshCw aria-hidden="true" /> Đổi chủ đề
                 </Button>
-              ))}
-            </fieldset>
+              </div>
+              <fieldset className="study-setting">
+                <legend>Số hình lựa chọn</legend>
+                <div className="study-option-group">
+                  {[2, 3, 4].map((n) => (
+                    <Button
+                      key={n}
+                      variant="outline"
+                      aria-pressed={count === n}
+                      onClick={() => {
+                        setCount(n);
+                        props.onCountChange(n);
+                      }}
+                    >
+                      {n} hình
+                    </Button>
+                  ))}
+                </div>
+              </fieldset>
+            </div>
+            {themeId === 'alphabet' && (
+              <fieldset className="study-setting study-alphabet-setting">
+                <legend>Cách luyện chữ cái</legend>
+                <div className="study-option-group">
+                  <Button
+                    variant="outline"
+                    aria-pressed={mode === 'name'}
+                    onClick={() => setMode('name')}
+                  >
+                    Tên chữ
+                  </Button>
+                  <Button
+                    variant="outline"
+                    disabled={!props.phonicsReady}
+                    aria-pressed={mode === 'sound'}
+                    onClick={() => setMode('sound')}
+                  >
+                    Âm chữ
+                  </Button>
+                </div>
+              </fieldset>
+            )}
+            <div className="study-setup-actions">
+              <Button className="study-start" onClick={start}>
+                <Play aria-hidden="true" /> Bắt đầu học
+              </Button>
+              <Button variant="outline" onClick={() => props.onGuide('intro')}>
+                <Volume2 aria-hidden="true" /> Hướng dẫn
+              </Button>
+            </div>
           </div>
-          {themeId === 'alphabet' && (
-            <fieldset className="study-toolbar">
-              <legend>Cách luyện chữ cái</legend>
-              <Button
-                variant="outline"
-                aria-pressed={mode === 'name'}
-                onClick={() => setMode('name')}
-              >
-                Tên chữ
-              </Button>
-              <Button
-                variant="outline"
-                disabled={!props.phonicsReady}
-                aria-pressed={mode === 'sound'}
-                onClick={() => setMode('sound')}
-              >
-                Âm chữ
-              </Button>
-            </fieldset>
-          )}
-          <Button className="study-start" onClick={start}>
-            ▶ Bắt đầu học
-          </Button>
-          <Button variant="outline" onClick={() => props.onGuide('intro')}>
-            🔊 Hướng dẫn
-          </Button>
           {showDemo && (
             <div className="study-demo">
-              <strong>Chơi thế nào nhỉ?</strong>
+              <h2>Chơi thế nào nhỉ?</h2>
               <div className="demo-interaction">
                 <Button
+                  className="demo-listen"
                   variant="outline"
                   onClick={() => {
                     setDemoStep(1);
                     props.onSpeak(wordById('cat')!, false, 'name');
                   }}
                 >
-                  ① 🔊 Nghe thử
+                  <Volume2 aria-hidden="true" /> ① Nghe thử
                 </Button>
                 <button
                   className={`demo-picture ${demoStep === 1 ? 'demo-point' : ''}`}
@@ -279,6 +304,7 @@ export function StudyStudio(props: Props) {
                 </span>
               </div>
               <Button
+                className="demo-dismiss"
                 variant="outline"
                 onClick={() => {
                   setShowDemo(false);
@@ -293,7 +319,7 @@ export function StudyStudio(props: Props) {
                   }
                 }}
               >
-                Bé đã hiểu rồi
+                <Check aria-hidden="true" /> Bé đã hiểu rồi
               </Button>
             </div>
           )}

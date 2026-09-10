@@ -1,7 +1,26 @@
 import { useState } from 'react';
+import {
+  BedDouble,
+  Sofa,
+  CookingPot,
+  Bath,
+  Hand,
+  Search,
+  Volume2,
+  Turtle,
+  ArrowRight,
+  Sparkles,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { rooms } from './room-scenes.mjs';
 import { wordById, type VocabularyWord } from './vocabulary';
+
+const roomIcons = {
+  bedroom: BedDouble,
+  living: Sofa,
+  kitchen: CookingPot,
+  bathroom: Bath,
+};
 
 export function RoomExplorer({
   onSpeak,
@@ -36,63 +55,91 @@ export function RoomExplorer({
   }
   return (
     <section className="room-explorer" aria-labelledby="room-title">
-      <h2 id="room-title">Khám phá căn phòng</h2>
-      <div className="room-tabs" aria-label="Chọn căn phòng">
-        {rooms.map((item) => (
-          <Button
-            key={item.id}
-            variant="outline"
-            aria-pressed={roomId === item.id}
-            onClick={() => {
-              reset(mode);
-              setRoomId(item.id);
-            }}
-          >
-            {item.label}
-          </Button>
-        ))}
+      <h2 id="room-title" className="sr-only">
+        Khám phá căn phòng
+      </h2>
+      <div
+        className="room-tabs room-selector"
+        role="group"
+        aria-label="Chọn căn phòng"
+      >
+        {rooms.map((item) => {
+          const Icon = roomIcons[item.id as keyof typeof roomIcons];
+          return (
+            <Button
+              key={item.id}
+              variant="outline"
+              aria-pressed={roomId === item.id}
+              onClick={() => {
+                reset(mode);
+                setRoomId(item.id);
+              }}
+            >
+              <Icon aria-hidden="true" /> <span>{item.label}</span>
+            </Button>
+          );
+        })}
       </div>
       <div className="room-play-layout">
         <div className="room-controls">
-          <h3>{room.label}</h3>
-          <div className="room-tabs">
+          <div className="room-control-heading">
+            <h3>{room.label}</h3>
+            <span>{room.targets.length} đồ vật</span>
+          </div>
+          <div
+            className="room-tabs room-mode-switch"
+            role="group"
+            aria-label="Chọn cách chơi"
+          >
             <Button
               variant="outline"
               aria-pressed={mode === 'explore'}
               onClick={() => reset('explore')}
             >
-              Chạm để nghe
+              <Hand aria-hidden="true" /> Chạm để nghe
             </Button>
             <Button
               variant="outline"
               aria-pressed={mode === 'find'}
               onClick={() => reset('find')}
             >
-              Nghe và tìm
+              <Search aria-hidden="true" /> Nghe và tìm
             </Button>
           </div>
-          <Button variant="outline" onClick={() => onGuide(mode)}>
-            🔊 Hướng dẫn
-          </Button>
           {mode === 'find' && (
-            <>
+            <div className="room-listen-actions">
               <Button
                 className="listen-button"
                 onClick={() => onSpeak(wordById(target.wordId)!)}
               >
-                🔊 Nghe đồ vật
+                <Volume2 aria-hidden="true" /> Nghe đồ vật
               </Button>
               <Button
                 variant="outline"
                 onClick={() => onSpeak(wordById(target.wordId)!, true)}
               >
-                🐢 Nghe chậm
+                <Turtle aria-hidden="true" /> Nghe chậm
               </Button>
-            </>
+            </div>
           )}
-          <p role="status">{message}</p>
+          <div
+            className={`room-feedback ${mode === 'find' && found ? 'is-found' : ''}`}
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            {mode === 'find' && found ? (
+              <Sparkles aria-hidden="true" />
+            ) : mode === 'find' ? (
+              <Search aria-hidden="true" />
+            ) : (
+              <Hand aria-hidden="true" />
+            )}
+            <p>{message}</p>
+          </div>
           {mode === 'find' && found && (
             <Button
+              className="room-next"
               onClick={() => {
                 onStop();
                 setTargetIndex((targetIndex + 1) % room.targets.length);
@@ -101,10 +148,19 @@ export function RoomExplorer({
                 setMessage('Đồ vật mới đã sẵn sàng. Con nghe rồi tìm nhé.');
               }}
             >
-              Tìm đồ vật tiếp →
+              Tìm đồ vật tiếp <ArrowRight aria-hidden="true" />
             </Button>
           )}
-          <p className="study-note">Chơi khám phá, không chấm điểm.</p>
+          <div className="room-control-footer">
+            <Button variant="outline" onClick={() => onGuide(mode)}>
+              <Volume2 aria-hidden="true" /> Hướng dẫn
+            </Button>
+            <p className="study-note">
+              Chơi khám phá,
+              <br />
+              không chấm điểm.
+            </p>
+          </div>
         </div>
         <div className="room-picture">
           <img
