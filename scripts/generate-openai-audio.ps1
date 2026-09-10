@@ -1,15 +1,22 @@
 param(
     [switch]$Force,
     [switch]$CedarSample,
-    [switch]$ClearSample
+    [switch]$ClearSample,
+    [switch]$Phonics,
+    [string]$Theme
 )
 
-Write-Host ''
-Write-Host 'Copy only the OpenAI API key (starts with sk-) to the clipboard.'
-[void](Read-Host 'Press Enter when the key is ready in the clipboard')
-
+$taskOriginalKey = $env:OPENAI_API_KEY
 try {
-    $taskApiKey = Get-Clipboard -Raw -ErrorAction Stop
+    $taskApiKey = $env:OPENAI_API_KEY
+    if ([string]::IsNullOrWhiteSpace($taskApiKey)) {
+        $taskApiKey = [Environment]::GetEnvironmentVariable('OPENAI_API_KEY', 'User')
+    }
+    if ([string]::IsNullOrWhiteSpace($taskApiKey)) {
+        Write-Host 'Copy only the OpenAI API key (starts with sk-) to the clipboard.'
+        [void](Read-Host 'Press Enter when the key is ready in the clipboard')
+        $taskApiKey = Get-Clipboard -Raw -ErrorAction Stop
+    }
     if ([string]::IsNullOrWhiteSpace($taskApiKey)) {
         throw 'The clipboard is empty. Copy the OpenAI API key, then run this command again.'
     }
@@ -25,6 +32,8 @@ try {
     if ($ClearSample) {
         $taskArguments += '--clear-sample'
     }
+    if ($Phonics) { $taskArguments += '--phonics' }
+    if ($Theme) { $taskArguments += "--theme=$Theme" }
 
     & node @taskArguments
     if ($LASTEXITCODE -ne 0) {
@@ -36,5 +45,5 @@ catch {
     exit 1
 }
 finally {
-    Remove-Item Env:OPENAI_API_KEY -ErrorAction SilentlyContinue
+    $env:OPENAI_API_KEY = $taskOriginalKey
 }

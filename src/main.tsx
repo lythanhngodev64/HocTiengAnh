@@ -1,10 +1,4 @@
-import {
-  type CSSProperties,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 
 import { Button } from '@/components/ui/button';
@@ -17,13 +11,20 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/components/ui/tabs';
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
+import { WordVisual } from './WordVisual';
+import {
+  createQuestion as makeQuestion,
+  reconcileProgress,
+} from './learning.mjs';
 import {
   themes,
+  groups,
+  wordById,
   totalWords,
   type ThemeId,
   type VocabularyWord,
@@ -57,92 +58,31 @@ type AudioManifest = {
   voice: string;
   disclosure: string;
   words: string[];
+  phonicsApproved?: string[];
 };
 
 const progressStorageKey = 'english-garden.learning-progress.v2';
 const optionLetters = ['A', 'B', 'C', 'D'];
 const questionsPerTest = 10;
 
-function shuffle<T>(items: T[]) {
-  const result = [...items];
-
-  for (let index = result.length - 1; index > 0; index -= 1) {
-    const replacementIndex = Math.floor(Math.random() * (index + 1));
-    [result[index], result[replacementIndex]] = [
-      result[replacementIndex],
-      result[index],
-    ];
-  }
-
-  return result;
-}
+type AlphabetMode = 'name' | 'sound';
+const createQuestion = makeQuestion as (
+  themeId: string,
+  learnedIds?: string[],
+  excludedIds?: string[],
+  mode?: AlphabetMode,
+) => Quiz;
 
 function isThemeId(value: string): value is ThemeId {
   return themes.some((theme) => theme.id === value);
 }
-
-function createQuestion(
-  themeId: ThemeId,
-  learnedIds: string[],
-  excludedTargetIds: string[] = [],
-): Quiz {
-  const themeWords = wordsForTheme(themeId);
-  const availableWords = themeWords.filter(
-    (word) => !excludedTargetIds.includes(word.id),
-  );
-  const unlearnedWords = availableWords.filter(
-    (word) => !learnedIds.includes(word.id),
-  );
-  const targetPool =
-    unlearnedWords.length > 0
-      ? unlearnedWords
-      : availableWords.length > 0
-        ? availableWords
-        : themeWords;
-  const target = shuffle(targetPool)[0]!;
-  const distractors = shuffle(
-    themeWords.filter((word) => word.id !== target.id),
-  ).slice(0, 3);
-
-  return {
-    target,
-    options: shuffle([target, ...distractors]),
-  };
-}
-
 function loadProgress(): LearningProgress {
-  const emptyProgress: LearningProgress = {
-    stars: 0,
-    learnedIds: [],
-    badges: [],
-  };
-
   try {
-    const stored = window.localStorage.getItem(progressStorageKey);
-    if (!stored) {
-      return emptyProgress;
-    }
-
-    const parsed = JSON.parse(stored) as Partial<LearningProgress>;
-    const learnedIds = Array.isArray(parsed.learnedIds)
-      ? parsed.learnedIds.filter((value): value is string => typeof value === 'string')
-      : [];
-    const badges = Array.isArray(parsed.badges)
-      ? parsed.badges.filter((value): value is ThemeId =>
-          typeof value === 'string' && isThemeId(value),
-        )
-      : [];
-
-    return {
-      stars:
-        typeof parsed.stars === 'number' && Number.isFinite(parsed.stars)
-          ? Math.max(0, Math.floor(parsed.stars))
-          : 0,
-      learnedIds: [...new Set(learnedIds)],
-      badges: [...new Set(badges)],
-    };
+    return reconcileProgress(
+      JSON.parse(window.localStorage.getItem(progressStorageKey) ?? 'null'),
+    );
   } catch {
-    return emptyProgress;
+    return reconcileProgress(null);
   }
 }
 
@@ -195,7 +135,10 @@ function isAudioManifest(value: unknown): value is AudioManifest {
     typeof manifest.voice === 'string' &&
     typeof manifest.disclosure === 'string' &&
     Array.isArray(manifest.words) &&
-    manifest.words.every((word) => typeof word === 'string')
+    manifest.words.every((word) => typeof word === 'string') &&
+    (manifest.phonicsApproved === undefined ||
+      (Array.isArray(manifest.phonicsApproved) &&
+        manifest.phonicsApproved.every((id) => typeof id === 'string')))
   );
 }
 
@@ -205,6 +148,10 @@ function EnglishGarden() {
   const [question, setQuestion] = useState<Quiz>(() =>
     createQuestion('bedroom', []),
   );
+  const [themePickerOpen, setThemePickerOpen] = useState(false);
+  const [selectedGroup, setSelectedGroup] = useState('home');
+  const [galleryPage, setGalleryPage] = useState(0);
+  const [alphabetMode, setAlphabetMode] = useState<AlphabetMode>('name');
   const [feedback, setFeedback] = useState<Feedback>('ready');
   const [wrongOptionIds, setWrongOptionIds] = useState<string[]>([]);
   const [round, setRound] = useState(1);
@@ -212,12 +159,13 @@ function EnglishGarden() {
   const [questionHadMistake, setQuestionHadMistake] = useState(false);
   const [testedIds, setTestedIds] = useState<string[]>([]);
   const [testComplete, setTestComplete] = useState(false);
-  const [audioMessage, setAudioMessage] = useState(
-    'Bấm “Nghe từ” để bắt đầu.',
-  );
-  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>(loadInitialVoices);
+  const [audioMessage, setAudioMessage] = useState('Bấm “Nghe từ” để bắt đầu.');
+  const [voices, setVoices] =
+    useState<SpeechSynthesisVoice[]>(loadInitialVoices);
   const [voiceUri, setVoiceUri] = useState(loadStoredVoiceUri);
-  const [audioManifest, setAudioManifest] = useState<AudioManifest | null>(null);
+  const [audioManifest, setAudioManifest] = useState<AudioManifest | null>(
+    null,
+  );
   const speechSupported =
     typeof window !== 'undefined' && 'speechSynthesis' in window;
   const [previewWordId, setPreviewWordId] = useState<string | null>(null);
@@ -253,7 +201,10 @@ function EnglishGarden() {
     () => new Set(audioManifest?.words ?? []),
     [audioManifest],
   );
-  const hasOpenAiAudio = openAiAudioWordIds.size > 0;
+  const hasOpenAiAudio = openAiAudioWordIds.has(question.target.id);
+  const phonicsReady = wordsForTheme('alphabet').every((word) =>
+    audioManifest?.phonicsApproved?.includes(word.id),
+  );
   const learnedInTheme = activeWords.filter((word) =>
     progress.learnedIds.includes(word.id),
   ).length;
@@ -329,17 +280,6 @@ function EnglishGarden() {
     };
   }, [assetBase]);
 
-  useEffect(() => {
-    const activeTab = document.querySelector<HTMLElement>(
-      '.theme-trigger[aria-selected="true"]',
-    );
-    activeTab?.scrollIntoView({
-      behavior: 'auto',
-      block: 'nearest',
-      inline: 'nearest',
-    });
-  }, [activeThemeId]);
-
   useEffect(
     () => () => {
       const audio = activeAudio.current;
@@ -392,7 +332,9 @@ function EnglishGarden() {
       if (context === 'gallery') {
         setPreviewWordId(null);
       }
-      setAudioMessage('Chưa có tệp OpenAI và trình duyệt không hỗ trợ giọng dự phòng.');
+      setAudioMessage(
+        'Chưa có tệp OpenAI và trình duyệt không hỗ trợ giọng dự phòng.',
+      );
       return;
     }
 
@@ -438,6 +380,7 @@ function EnglishGarden() {
     entry: VocabularyWord,
     slowly = false,
     context: PlaybackContext = 'quiz',
+    mode: AlphabetMode = alphabetMode,
   ) {
     if (context === 'quiz') {
       setPreviewWordId(null);
@@ -455,12 +398,20 @@ function EnglishGarden() {
       window.speechSynthesis.cancel();
     }
 
-    if (!openAiAudioWordIds.has(entry.id)) {
+    const isPhonics = entry.kind === 'letter' && mode === 'sound';
+    if (isPhonics && !audioManifest?.phonicsApproved?.includes(entry.id)) {
+      setPreviewWordId(null);
+      setAudioMessage(
+        'Âm chữ này đang chờ kiểm tra. Bé có thể nghe tên chữ trước nhé.',
+      );
+      return;
+    }
+    if (!isPhonics && !openAiAudioWordIds.has(entry.id)) {
       speakWithBrowserVoice(entry.word, slowly, context, token);
       return;
     }
 
-    const suffix = slowly ? '-slow' : '';
+    const suffix = (isPhonics ? '-sound' : '') + (slowly ? '-slow' : '');
     const audio = new Audio(
       `${assetBase}audio/openai-coral/${entry.id}${suffix}.mp3`,
     );
@@ -476,7 +427,12 @@ function EnglishGarden() {
       if (activeAudio.current === audio) {
         activeAudio.current = null;
       }
-      speakWithBrowserVoice(entry.word, slowly, context, token);
+      if (isPhonics) {
+        setPreviewWordId(null);
+        setAudioMessage('Chưa phát được âm chữ. Hãy thử lại nhé.');
+      } else {
+        speakWithBrowserVoice(entry.word, slowly, context, token);
+      }
     };
 
     audio.preload = 'auto';
@@ -498,15 +454,6 @@ function EnglishGarden() {
     };
     audio.onerror = useFallback;
     void audio.play().catch(useFallback);
-  }
-
-  function imageStyle(word: VocabularyWord): CSSProperties {
-    return {
-      backgroundImage:
-        'url(' + assetBase + 'images/vocabulary/' + word.id + '.png)',
-      backgroundPosition: 'center',
-      backgroundSize: 'contain',
-    };
   }
 
   function updateVoice(nextValue: string | null) {
@@ -554,19 +501,10 @@ function EnglishGarden() {
         const learnedIds = isNewWord
           ? [...currentProgress.learnedIds, question.target.id]
           : currentProgress.learnedIds;
-        const completedTheme = wordsForTheme(activeThemeId).every((word) =>
-          learnedIds.includes(word.id),
-        );
-        const badges =
-          completedTheme && !currentProgress.badges.includes(activeThemeId)
-            ? [...currentProgress.badges, activeThemeId]
-            : currentProgress.badges;
-
-        return {
+        return reconcileProgress({
           stars: currentProgress.stars + (isNewWord ? 1 : 0),
           learnedIds,
-          badges,
-        };
+        });
       });
       return;
     }
@@ -590,7 +528,12 @@ function EnglishGarden() {
 
     const excludedIds = [...testedIds, question.target.id];
     setQuestion(
-      createQuestion(activeThemeId, progress.learnedIds, excludedIds),
+      createQuestion(
+        activeThemeId,
+        progress.learnedIds,
+        excludedIds,
+        alphabetMode,
+      ),
     );
     setFeedback('ready');
     setWrongOptionIds([]);
@@ -600,9 +543,9 @@ function EnglishGarden() {
     setAudioMessage('Một từ mới đã sẵn sàng. Hãy nghe thật kỹ.');
   }
 
-  function restartTest() {
+  function restartTest(mode: AlphabetMode = alphabetMode) {
     stopSpeaking();
-    setQuestion(createQuestion(activeThemeId, progress.learnedIds));
+    setQuestion(createQuestion(activeThemeId, progress.learnedIds, [], mode));
     setFeedback('ready');
     setWrongOptionIds([]);
     setRound(1);
@@ -621,6 +564,9 @@ function EnglishGarden() {
 
     stopSpeaking();
     setActiveThemeId(value);
+    setAlphabetMode('name');
+    setGalleryPage(0);
+    setThemePickerOpen(false);
     setQuestion(createQuestion(value, progress.learnedIds));
     setFeedback('ready');
     setWrongOptionIds([]);
@@ -635,7 +581,7 @@ function EnglishGarden() {
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      if (feedback === 'correct' || testComplete) {
+      if (themePickerOpen || feedback === 'correct' || testComplete) {
         return;
       }
 
@@ -658,7 +604,10 @@ function EnglishGarden() {
   const feedbackText =
     feedback === 'correct'
       ? (questionHadMistake ? 'Đúng rồi! ' : 'Chính xác, bé được 1 điểm! ') +
-        question.target.word + ' là ' + question.target.meaning + '.'
+        question.target.word +
+        ' là ' +
+        question.target.meaning +
+        '.'
       : feedback === 'wrong'
         ? 'Chưa đúng rồi. Hãy nghe lại thật chậm.'
         : audioMessage;
@@ -671,7 +620,9 @@ function EnglishGarden() {
       <div className="garden-shell">
         <header className="garden-header">
           <a className="garden-brand" href="./" aria-label="Về đầu bài học">
-            <span className="brand-seed" aria-hidden="true">A</span>
+            <span className="brand-seed" aria-hidden="true">
+              A
+            </span>
             <span>
               <strong>English Garden</strong>
               <small>Nghe · Chạm · Nhớ từ</small>
@@ -679,8 +630,13 @@ function EnglishGarden() {
           </a>
 
           <div className="header-progress" aria-label="Tiến độ của bé">
-            <span className="star-pill"><span aria-hidden="true">★</span> {progress.stars}</span>
-            <span className="badge-pill"><span aria-hidden="true">✦</span> {progress.badges.length}/{themes.length}</span>
+            <span className="star-pill">
+              <span aria-hidden="true">★</span> {progress.stars}
+            </span>
+            <span className="badge-pill">
+              <span aria-hidden="true">✦</span> {progress.badges.length}/
+              {themes.length}
+            </span>
           </div>
         </header>
 
@@ -688,10 +644,18 @@ function EnglishGarden() {
           <div>
             <p className="section-kicker">Khu vườn từ vựng</p>
             <h1 id="garden-title">Mỗi ngày một ít, bé nhớ được nhiều!</h1>
-            <p>{totalWords} từ mới · {themes.length} chủ đề · nghe chậm thật rõ</p>
+            <p>
+              {totalWords} mục học · {themes.length} chủ đề · cùng bé khám phá
+            </p>
           </div>
           <div className="word-progress">
-            <span>Đã nhớ <strong>{progress.learnedIds.length}/{totalWords}</strong> từ</span>
+            <span>
+              Đã nhớ{' '}
+              <strong>
+                {progress.learnedIds.length}/{totalWords}
+              </strong>{' '}
+              từ
+            </span>
             <Progress
               value={learnedPercent}
               className="garden-progress"
@@ -700,37 +664,80 @@ function EnglishGarden() {
           </div>
         </section>
 
-        <Tabs
-          value={activeThemeId}
-          onValueChange={chooseTheme}
-          className="theme-tabs"
-        >
-          <TabsList className="theme-list" aria-label="Chọn chủ đề">
-            {themes.map((theme) => {
-              const isComplete = progress.badges.includes(theme.id);
-
-              return (
-                <TabsTrigger
-                  key={theme.id}
-                  value={theme.id}
-                  className="theme-trigger"
-                  style={{ '--theme-color': theme.color } as CSSProperties}
-                >
-                  <span className="theme-icon" aria-hidden="true">{theme.icon}</span>
-                  <span>
-                    <strong>{theme.shortLabel}</strong>
-                    <small>{wordsForTheme(theme.id).length} từ</small>
-                  </span>
-                  {isComplete && <span className="theme-done" aria-label="Đã hoàn thành">✓</span>}
-                </TabsTrigger>
-              );
-            })}
-          </TabsList>
-
-          <TabsContent value={activeThemeId} className="learning-panel">
+        <div className="theme-tabs">
+          <div className="current-theme-bar">
+            <span>
+              <span aria-hidden="true">{activeTheme.icon}</span>{' '}
+              <strong>{activeTheme.label}</strong>
+              <small>{activeWords.length} mục học</small>
+            </span>
+            <Button
+              onClick={() => {
+                setSelectedGroup(activeTheme.groupId);
+                setThemePickerOpen(true);
+                stopSpeaking();
+              }}
+              className="change-theme-button"
+            >
+              Đổi chủ đề
+            </Button>
+          </div>
+          <Dialog open={themePickerOpen} onOpenChange={setThemePickerOpen}>
+            <DialogContent className="topic-dialog">
+              <DialogTitle>Bé muốn khám phá gì?</DialogTitle>
+              <DialogDescription>
+                Chọn một nhóm, rồi chạm vào chủ đề bé thích.
+              </DialogDescription>
+              <div className="topic-group-grid" aria-label="Nhóm chủ đề">
+                {groups.map((group) => (
+                  <Button
+                    key={group.id}
+                    variant="outline"
+                    aria-pressed={selectedGroup === group.id}
+                    onClick={() => setSelectedGroup(group.id)}
+                  >
+                    <span aria-hidden="true">{group.icon}</span>
+                    {group.label}
+                  </Button>
+                ))}
+              </div>
+              <div className="topic-choice-grid">
+                {themes
+                  .filter((theme) => theme.groupId === selectedGroup)
+                  .map((theme) => {
+                    const count = theme.wordIds.filter((id) =>
+                      progress.learnedIds.includes(id),
+                    ).length;
+                    return (
+                      <Button
+                        key={theme.id}
+                        variant="outline"
+                        className="topic-choice"
+                        aria-pressed={activeThemeId === theme.id}
+                        onClick={() => chooseTheme(theme.id)}
+                      >
+                        <span className="theme-icon" aria-hidden="true">
+                          {theme.icon}
+                        </span>
+                        <span>
+                          <strong>{theme.label}</strong>
+                          <small>
+                            {count}/{theme.wordIds.length} đã nhớ{' '}
+                            {count === theme.wordIds.length ? '★' : ''}
+                          </small>
+                        </span>
+                      </Button>
+                    );
+                  })}
+              </div>
+            </DialogContent>
+          </Dialog>
+          <section className="learning-panel">
             <div className="panel-heading">
               <div>
-                <p className="section-kicker">{activeTheme.icon} {activeTheme.label}</p>
+                <p className="section-kicker">
+                  {activeTheme.icon} {activeTheme.label}
+                </p>
                 <h2>Nghe và chạm đúng hình</h2>
                 <p>{activeTheme.description}</p>
               </div>
@@ -739,29 +746,74 @@ function EnglishGarden() {
               </span>
             </div>
 
+            {activeThemeId === 'alphabet' && (
+              <div className="alphabet-toolbar">
+                <fieldset aria-label="Cách luyện chữ cái">
+                  <Button
+                    aria-pressed={alphabetMode === 'name'}
+                    onClick={() => {
+                      setAlphabetMode('name');
+                      restartTest('name');
+                    }}
+                  >
+                    Tên chữ
+                  </Button>
+                  <Button
+                    aria-pressed={alphabetMode === 'sound'}
+                    disabled={!phonicsReady}
+                    onClick={() => {
+                      setAlphabetMode('sound');
+                      restartTest('sound');
+                    }}
+                  >
+                    Âm chữ
+                  </Button>
+                </fieldset>
+                <p>
+                  Mỗi chữ học một âm cơ bản. Q đi cùng U; X nghe âm cuối trong
+                  “box”.
+                  {!phonicsReady && ' Bài âm chữ đang chờ kiểm tra giọng đọc.'}
+                </p>
+              </div>
+            )}
+
             {testComplete && (
               <section
                 className={`score-card score-${scoreLevel}`}
                 aria-live="polite"
                 aria-labelledby="score-title"
               >
-                <div className="score-sparkles" aria-hidden="true">✦ · ✧ · ✦</div>
+                <div className="score-sparkles" aria-hidden="true">
+                  ✦ · ✧ · ✦
+                </div>
                 <p className="score-kicker">Kết quả bài kiểm tra</p>
-                <div className="score-stars" aria-hidden="true">{scoreStars}</div>
+                <div className="score-stars" aria-hidden="true">
+                  {scoreStars}
+                </div>
                 <h2 id="score-title">{scoreMessage}</h2>
                 <div className="score-number">
                   <strong>{testCorrect}</strong>
                   <span>/{currentTestTotal}</span>
                 </div>
-                <p className="score-percent">{scorePercent}% câu đúng ngay lần chọn đầu tiên</p>
-                <Button type="button" className="restart-test-button" onClick={restartTest}>
+                <p className="score-percent">
+                  {scorePercent}% câu đúng ngay lần chọn đầu tiên
+                </p>
+                <Button
+                  type="button"
+                  className="restart-test-button"
+                  onClick={() => restartTest()}
+                >
                   <span aria-hidden="true">↻</span>
                   <span>Làm lại bài này</span>
                 </Button>
               </section>
             )}
 
-            <div className={'listen-deck' + (testComplete ? ' is-test-hidden' : '')}>
+            <div
+              className={
+                'listen-deck' + (testComplete ? ' is-test-hidden' : '')
+              }
+            >
               <div className="listen-actions">
                 <p className="listen-title">Từ nào đang được đọc?</p>
                 <div className="listen-buttons">
@@ -771,7 +823,13 @@ function EnglishGarden() {
                     onClick={() => speakWord(question.target)}
                   >
                     <span aria-hidden="true">🔊</span>
-                    <span>Nghe từ</span>
+                    <span>
+                      {activeThemeId === 'alphabet'
+                        ? alphabetMode === 'name'
+                          ? 'Nghe tên chữ'
+                          : 'Nghe âm chữ'
+                        : 'Nghe từ'}
+                    </span>
                   </Button>
                   <Button
                     type="button"
@@ -783,7 +841,6 @@ function EnglishGarden() {
                     <span>Nghe chậm</span>
                   </Button>
                 </div>
-                <p className="audio-status" aria-live="polite">{audioMessage}</p>
               </div>
 
               <div className="voice-setting">
@@ -804,10 +861,16 @@ function EnglishGarden() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="auto">
-                          Tự động: {selectedVoice ? readableVoiceName(selectedVoice) : 'English'}
+                          Tự động:{' '}
+                          {selectedVoice
+                            ? readableVoiceName(selectedVoice)
+                            : 'English'}
                         </SelectItem>
                         {englishVoices.map((voice) => (
-                          <SelectItem key={voice.voiceURI} value={voice.voiceURI}>
+                          <SelectItem
+                            key={voice.voiceURI}
+                            value={voice.voiceURI}
+                          >
                             {readableVoiceName(voice)} ({voice.lang})
                           </SelectItem>
                         ))}
@@ -838,21 +901,16 @@ function EnglishGarden() {
                   <Button
                     key={option.id}
                     type="button"
-                    className={
-                      'quiz-card' +
-                      optionState
-                    }
+                    className={'quiz-card' + optionState}
                     onClick={() => answerOption(option)}
                     aria-label={'Chọn hình ' + optionLetters[index]}
                     aria-pressed={feedback === 'correct' && isCorrectOption}
                   >
-                    <span
-                      className="quiz-picture"
-                      style={imageStyle(option)}
-                      aria-hidden="true"
-                    />
+                    <WordVisual word={option} className="quiz-picture" />
                     <span className="quiz-card-footer">
-                      <span className="option-letter">{optionLetters[index]}</span>
+                      <span className="option-letter">
+                        {optionLetters[index]}
+                      </span>
                       {feedback === 'correct' && isCorrectOption && (
                         <span className="answer-reveal">
                           <strong lang="en">{option.word}</strong>
@@ -875,15 +933,29 @@ function EnglishGarden() {
                 (testComplete ? ' is-test-hidden' : '')
               }
             >
-              <div className="feedback-text" aria-live="polite" aria-atomic="true">
+              <div
+                className="feedback-text"
+                aria-live="polite"
+                aria-atomic="true"
+              >
                 <span className="feedback-symbol" aria-hidden="true">
-                  {feedback === 'correct' ? '✦' : feedback === 'wrong' ? '↻' : '💡'}
+                  {feedback === 'correct'
+                    ? '✦'
+                    : feedback === 'wrong'
+                      ? '↻'
+                      : '💡'}
                 </span>
                 <p>{feedbackText}</p>
               </div>
               {feedback === 'correct' && (
-                <Button type="button" className="next-round-button" onClick={nextQuestion}>
-                  <span>{round >= currentTestTotal ? 'Xem điểm' : 'Câu mới'}</span>
+                <Button
+                  type="button"
+                  className="next-round-button"
+                  onClick={nextQuestion}
+                >
+                  <span>
+                    {round >= currentTestTotal ? 'Xem điểm' : 'Câu mới'}
+                  </span>
                   <span aria-hidden="true">→</span>
                 </Button>
               )}
@@ -895,50 +967,143 @@ function EnglishGarden() {
                   <p className="section-kicker">Góc từ vựng</p>
                   <h3 id="gallery-title">Chạm vào từng hình để nghe từ</h3>
                 </div>
-                <span className={isThemeComplete ? 'theme-status done' : 'theme-status'}>
-                  {isThemeComplete ? 'Đã nhận huy hiệu!' : learnedInTheme + '/' + activeWords.length + ' từ đã nhớ'}
+                <span
+                  className={
+                    isThemeComplete ? 'theme-status done' : 'theme-status'
+                  }
+                >
+                  {isThemeComplete
+                    ? 'Đã nhận huy hiệu!'
+                    : learnedInTheme + '/' + activeWords.length + ' từ đã nhớ'}
                 </span>
               </div>
 
               <div className="gallery-grid">
-                {activeWords.map((word) => {
-                  const isLearned = progress.learnedIds.includes(word.id);
+                {activeWords
+                  .slice(galleryPage * 8, galleryPage * 8 + 8)
+                  .map((word) => {
+                    const isLearned = progress.learnedIds.includes(word.id);
 
-                  return (
-                    <Button
-                      key={word.id}
-                      type="button"
-                      variant="outline"
-                      className={
-                        'gallery-card' +
-                        (isLearned ? ' is-learned' : '') +
-                        (previewWordId === word.id ? ' is-listening' : '')
-                      }
-                      onClick={() => {
-                        setPreviewWordId(word.id);
-                        speakWord(word, true, 'gallery');
-                      }}
-                      aria-label={'Nghe từ ' + word.word + ', nghĩa là ' + word.meaning}
-                    >
-                      <span
-                        className="gallery-picture"
-                        style={imageStyle(word)}
-                        aria-hidden="true"
-                      />
-                      <span className="gallery-copy">
-                        <strong lang="en">{word.word}</strong>
-                        <small>{word.meaning}</small>
-                      </span>
-                      {isLearned && <span className="gallery-check" aria-hidden="true">✓</span>}
-                    </Button>
-                  );
-                })}
+                    const example = word.exampleId
+                      ? wordById(word.exampleId)
+                      : undefined;
+                    return (
+                      <div
+                        key={word.id}
+                        className={
+                          'gallery-item' +
+                          (word.kind === 'letter' ? ' letter-gallery-item' : '')
+                        }
+                      >
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className={
+                            'gallery-card' +
+                            (isLearned ? ' is-learned' : '') +
+                            (previewWordId === word.id ? ' is-listening' : '')
+                          }
+                          onClick={() => {
+                            setPreviewWordId(word.id);
+                            speakWord(word, true, 'gallery', 'name');
+                          }}
+                          aria-label={
+                            'Nghe ' +
+                            (word.kind === 'letter' ? 'tên chữ ' : 'từ ') +
+                            word.word +
+                            ', nghĩa là ' +
+                            word.meaning
+                          }
+                        >
+                          <WordVisual word={word} className="gallery-picture" />
+                          <span className="gallery-copy">
+                            <strong lang="en">{word.word}</strong>
+                            <small>{word.meaning}</small>
+                          </span>
+                          {isLearned && (
+                            <span className="gallery-check" aria-hidden="true">
+                              ✓
+                            </span>
+                          )}
+                        </Button>
+                        {word.kind === 'letter' && (
+                          <div className="letter-extras">
+                            {example && (
+                              <Button
+                                variant="ghost"
+                                className="letter-example"
+                                onClick={() =>
+                                  speakWord(example, false, 'gallery', 'name')
+                                }
+                                aria-label={'Nghe ví dụ ' + example.word}
+                              >
+                                <WordVisual word={example} />
+                                <span lang="en">{example.word}</span>
+                              </Button>
+                            )}
+                            <div className="letter-audio-buttons">
+                              <Button
+                                variant="outline"
+                                onClick={() =>
+                                  speakWord(word, false, 'gallery', 'name')
+                                }
+                              >
+                                Nghe tên chữ
+                              </Button>
+                              <Button
+                                variant="outline"
+                                disabled={
+                                  !audioManifest?.phonicsApproved?.includes(
+                                    word.id,
+                                  )
+                                }
+                                onClick={() =>
+                                  speakWord(word, false, 'gallery', 'sound')
+                                }
+                              >
+                                Nghe âm chữ
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
               </div>
+              <nav className="gallery-pagination" aria-label="Trang từ vựng">
+                <Button
+                  variant="outline"
+                  disabled={galleryPage === 0}
+                  onClick={() => {
+                    stopSpeaking();
+                    setPreviewWordId(null);
+                    setGalleryPage((page) => page - 1);
+                  }}
+                >
+                  ← Trang trước
+                </Button>
+                <span aria-live="polite">
+                  Trang {galleryPage + 1}/{Math.ceil(activeWords.length / 8)}
+                </span>
+                <Button
+                  variant="outline"
+                  disabled={(galleryPage + 1) * 8 >= activeWords.length}
+                  onClick={() => {
+                    stopSpeaking();
+                    setPreviewWordId(null);
+                    setGalleryPage((page) => page + 1);
+                  }}
+                >
+                  Trang sau →
+                </Button>
+              </nav>
             </section>
-          </TabsContent>
-        </Tabs>
+          </section>
+        </div>
 
-        <p className="keyboard-hint">Mẹo: nhấn phím 1, 2, 3 hoặc 4 để chọn hình trong trò chơi.</p>
+        <p className="keyboard-hint">
+          Mẹo: nhấn phím 1, 2, 3 hoặc 4 để chọn hình trong trò chơi.
+        </p>
       </div>
     </main>
   );

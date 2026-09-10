@@ -1,18 +1,6 @@
-import vocabularyData from './vocabulary-data.json';
+import * as catalogue from './catalogue.mjs';
 
-export type ThemeId =
-  | 'bedroom'
-  | 'living'
-  | 'garden'
-  | 'hygiene'
-  | 'kitchen'
-  | 'family'
-  | 'body'
-  | 'clothes'
-  | 'animals'
-  | 'food'
-  | 'school'
-  | 'toys';
+export type ThemeId = string;
 
 export type Theme = {
   id: ThemeId;
@@ -21,28 +9,31 @@ export type Theme = {
   icon: string;
   color: string;
   description: string;
+  groupId: string;
+  wordIds: string[];
 };
 
 export type VocabularyWord = {
   id: string;
-  themeId: ThemeId;
   word: string;
   meaning: string;
   imageFile: string;
-  columns: 5;
-  index: number;
+  kind: 'picture' | 'letter' | 'number' | 'color' | 'shape' | 'day' | 'month';
+  value?: string;
+  phoneme?: string;
+  exampleId?: string;
+  spriteIndex?: number;
 };
 
-export const themes = vocabularyData.themes as Theme[];
-
-export const vocabulary = vocabularyData.words.map((word) => ({
-  ...word,
-  themeId: word.themeId as ThemeId,
-  columns: 5 as const,
-})) satisfies VocabularyWord[];
+export const groups = catalogue.groups;
+export const themes = catalogue.themes as Theme[];
+export const vocabulary = catalogue.vocabulary as VocabularyWord[];
 
 export const totalWords = vocabulary.length;
 
-export function wordsForTheme(themeId: ThemeId) {
-  return vocabulary.filter((word) => word.themeId === themeId);
-}
+export const wordsForTheme = catalogue.wordsForTheme as (
+  id: ThemeId,
+) => VocabularyWord[];
+export const wordById = catalogue.wordById as (
+  id: string,
+) => VocabularyWord | undefined;

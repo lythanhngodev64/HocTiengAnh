@@ -1,0 +1,31 @@
+{
+  "tool": "built-in image_gen",
+  "qa": {
+    "inspectedAll": true,
+    "order": "All 229 sheet positions correct; use three standalone overrides in precedence.",
+    "notes": [
+      "Most sheets have transparent backgrounds despite white requested: render on white CSS background.",
+      "Inset varies and can be under 15 percent, but images remain inside regular third-cells.",
+      "Taxi and zoo contain normal contextual signs; English/Vietnamese correctly show ABC and Ă Â Ê.",
+      "Use standalone roof to replace original arrow pointing chimney; porridge replaces oat version; cooking replaces unaccompanied child.",
+      "Standalone cooking fills canvas edges but complete faces, hands and food context visible."
+    ]
+  },
+  "overrides": [
+    {
+      "id": "roof",
+      "file": "public/images/vocabulary/roof-reviewed.png",
+      "prompt": "Use case: illustration-story. Asset type: single standalone preschool vocabulary illustration, square canvas, NOT a sheet. Crisp warm colorful 2D children's book cartoon, smooth outlines, gentle shading, pure white background, main illustration centered with generous 15% margins. No letters, no words, no labels, no border, no watermark. Subject: One small pale neutral simple house with NO CHIMNEY. Large red tiled triangular roof is the dominant subject. A single blue arrow above points down to the CENTER of the red tiled roof surface, tip clearly touching central tile away from edges. No other arrows."
+    },
+    {
+      "id": "porridge",
+      "file": "public/images/vocabulary/porridge-reviewed.png",
+      "prompt": "Use case: illustration-story. Asset type: single standalone preschool vocabulary illustration, square canvas, NOT a sheet. Crisp warm colorful 2D children's book cartoon, smooth outlines, gentle shading, pure white background, main illustration centered with generous 15% margins. No letters, no words, no labels, no border, no watermark. Subject: One ceramic bowl of Vietnamese savory rice porridge (cháo), creamy white soft rice grains in thick rice soup, topped with a little chopped spring onion and finely shredded chicken, spoon beside bowl, gentle steam. No oats, no fruit, no berries, no bananas."
+    },
+    {
+      "id": "cooking",
+      "file": "public/images/vocabulary/cooking-reviewed.png",
+      "prompt": "Use case: illustration-story. Asset type: single standalone preschool vocabulary illustration, square canvas, NOT a sheet. Crisp warm colorful 2D children's book cartoon, smooth outlines, gentle shading, pure white background, main illustration centered with generous 15% margins. No letters, no words, no labels, no border, no watermark. Subject: A preschool child and a clearly adult mother cooking together in aprons, beside one another at kitchen counter. Adult gently supervises with hand helping child stir a mixing bowl using wooden spoon. Chopped vegetables on plate. No stove, no fire, no steam, no knives. Clear cooking/food preparation context. Both people complete and centrally framed."
+    }
+  ]
+}

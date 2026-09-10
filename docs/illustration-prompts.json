@@ -1,0 +1,391 @@
+{
+  "method": "Built-in image_gen",
+  "style": "Children's cartoon illustrations for ages 3–5",
+  "sheets": [
+    {
+      "file": "public/images/sheets/vocabulary-0.png",
+      "ids": [
+        "finger",
+        "knee",
+        "tooth",
+        "tongue",
+        "house",
+        "roof",
+        "window",
+        "wall",
+        "floor"
+      ],
+      "prompt": "Use case: illustration-story. Asset type: original English Garden preschool vocabulary sprite sheet. Generate ONE perfectly SQUARE image with exactly 3 columns x 3 rows of equal square invisible cells on pure white. Centers must be at 1/6, 1/2, 5/6 width and height. Each independent illustration entirely inside its own cell with at least 15 percent white inset on every cell side. No borders, no grid lines, no captions, no labels, no numbers, no watermarks. Crisp warm colorful 2D children's book cartoon, smooth confident outlines, light shading, recognizable simple objects, friendly never scary animals. Children for actions and emotions; adults with distinctive tools/uniform for jobs. Scenes also fit their cell with white around them. Exact row-major subjects below; do not reorder, combine, duplicate or omit. Blank specified cells remain pure white. Only language subject flashcards may include ABC or Ă Â Ê as instructed.\nRow 1, column 1: a hand with index finger emphasized by a small arrow pointing to that one finger.\nRow 1, column 2: child's bent leg with small arrow pointing at knee.\nRow 1, column 3: one clean white tooth.\nRow 2, column 1: smiling open mouth showing pink tongue, arrow to tongue.\nRow 2, column 2: house.\nRow 2, column 3: small pale house with bright red triangular tiled roof emphasized.\nRow 3, column 1: window.\nRow 3, column 2: freestanding brick wall.\nRow 3, column 3: wooden floor area with baseboard and faint wall."
+    },
+    {
+      "file": "public/images/sheets/vocabulary-1.png",
+      "ids": [
+        "stairs",
+        "bedroom",
+        "living-room",
+        "kitchen",
+        "bathroom",
+        "chopsticks",
+        "pot-cooking",
+        "bathtub",
+        "bucket"
+      ],
+      "prompt": "Use case: illustration-story. Asset type: original English Garden preschool vocabulary sprite sheet. Generate ONE perfectly SQUARE image with exactly 3 columns x 3 rows of equal square invisible cells on pure white. Centers must be at 1/6, 1/2, 5/6 width and height. Each independent illustration entirely inside its own cell with at least 15 percent white inset on every cell side. No borders, no grid lines, no captions, no labels, no numbers, no watermarks. Crisp warm colorful 2D children's book cartoon, smooth confident outlines, light shading, recognizable simple objects, friendly never scary animals. Children for actions and emotions; adults with distinctive tools/uniform for jobs. Scenes also fit their cell with white around them. Exact row-major subjects below; do not reorder, combine, duplicate or omit. Blank specified cells remain pure white. Only language subject flashcards may include ABC or Ă Â Ê as instructed.\nRow 1, column 1: stairs.\nRow 1, column 2: bedroom.\nRow 1, column 3: living room.\nRow 2, column 1: kitchen.\nRow 2, column 2: bathroom.\nRow 2, column 3: chopsticks.\nRow 3, column 1: metal cooking pot with lid and side handles.\nRow 3, column 2: bathtub.\nRow 3, column 3: bucket."
+    },
+    {
+      "file": "public/images/sheets/vocabulary-2.png",
+      "ids": [
+        "watering-can",
+        "seed",
+        "balloon",
+        "bubbles",
+        "crayon",
+        "notebook",
+        "glue",
+        "scissors",
+        "raincoat"
+      ],
+      "prompt": "Use case: illustration-story. Asset type: original English Garden preschool vocabulary sprite sheet. Generate ONE perfectly SQUARE image with exactly 3 columns x 3 rows of equal square invisible cells on pure white. Centers must be at 1/6, 1/2, 5/6 width and height. Each independent illustration entirely inside its own cell with at least 15 percent white inset on every cell side. No borders, no grid lines, no captions, no labels, no numbers, no watermarks. Crisp warm colorful 2D children's book cartoon, smooth confident outlines, light shading, recognizable simple objects, friendly never scary animals. Children for actions and emotions; adults with distinctive tools/uniform for jobs. Scenes also fit their cell with white around them. Exact row-major subjects below; do not reorder, combine, duplicate or omit. Blank specified cells remain pure white. Only language subject flashcards may include ABC or Ă Â Ê as instructed.\nRow 1, column 1: watering can.\nRow 1, column 2: three large distinct seeds with one tiny sprout.\nRow 1, column 3: balloon.\nRow 2, column 1: bubbles.\nRow 2, column 2: crayon.\nRow 2, column 3: open lined school exercise notebook.\nRow 3, column 1: glue.\nRow 3, column 2: scissors.\nRow 3, column 3: raincoat."
+    },
+    {
+      "file": "public/images/sheets/vocabulary-3.png",
+      "ids": [
+        "gloves",
+        "scarf",
+        "elephant",
+        "butterfly",
+        "lion",
+        "tiger",
+        "monkey",
+        "giraffe",
+        "zebra"
+      ],
+      "prompt": "Use case: illustration-story. Asset type: original English Garden preschool vocabulary sprite sheet. Generate ONE perfectly SQUARE image with exactly 3 columns x 3 rows of equal square invisible cells on pure white. Centers must be at 1/6, 1/2, 5/6 width and height. Each independent illustration entirely inside its own cell with at least 15 percent white inset on every cell side. No borders, no grid lines, no captions, no labels, no numbers, no watermarks. Crisp warm colorful 2D children's book cartoon, smooth confident outlines, light shading, recognizable simple objects, friendly never scary animals. Children for actions and emotions; adults with distinctive tools/uniform for jobs. Scenes also fit their cell with white around them. Exact row-major subjects below; do not reorder, combine, duplicate or omit. Blank specified cells remain pure white. Only language subject flashcards may include ABC or Ă Â Ê as instructed.\nRow 1, column 1: gloves.\nRow 1, column 2: scarf.\nRow 1, column 3: elephant.\nRow 2, column 1: butterfly.\nRow 2, column 2: lion.\nRow 2, column 3: tiger.\nRow 3, column 1: monkey.\nRow 3, column 2: giraffe.\nRow 3, column 3: zebra."
+    },
+    {
+      "file": "public/images/sheets/vocabulary-4.png",
+      "ids": [
+        "bear",
+        "panda",
+        "deer",
+        "fox",
+        "crocodile",
+        "kangaroo",
+        "goat",
+        "sheep",
+        "horse"
+      ],
+      "prompt": "Use case: illustration-story. Asset type: original English Garden preschool vocabulary sprite sheet. Generate ONE perfectly SQUARE image with exactly 3 columns x 3 rows of equal square invisible cells on pure white. Centers must be at 1/6, 1/2, 5/6 width and height. Each independent illustration entirely inside its own cell with at least 15 percent white inset on every cell side. No borders, no grid lines, no captions, no labels, no numbers, no watermarks. Crisp warm colorful 2D children's book cartoon, smooth confident outlines, light shading, recognizable simple objects, friendly never scary animals. Children for actions and emotions; adults with distinctive tools/uniform for jobs. Scenes also fit their cell with white around them. Exact row-major subjects below; do not reorder, combine, duplicate or omit. Blank specified cells remain pure white. Only language subject flashcards may include ABC or Ă Â Ê as instructed.\nRow 1, column 1: bear.\nRow 1, column 2: panda.\nRow 1, column 3: deer.\nRow 2, column 1: fox.\nRow 2, column 2: crocodile.\nRow 2, column 3: kangaroo.\nRow 3, column 1: goat.\nRow 3, column 2: sheep.\nRow 3, column 3: horse."
+    },
+    {
+      "file": "public/images/sheets/vocabulary-5.png",
+      "ids": [
+        "buffalo",
+        "hamster",
+        "crab",
+        "shrimp",
+        "octopus",
+        "squid",
+        "dolphin",
+        "whale",
+        "shark"
+      ],
+      "prompt": "Use case: illustration-story. Asset type: original English Garden preschool vocabulary sprite sheet. Generate ONE perfectly SQUARE image with exactly 3 columns x 3 rows of equal square invisible cells on pure white. Centers must be at 1/6, 1/2, 5/6 width and height. Each independent illustration entirely inside its own cell with at least 15 percent white inset on every cell side. No borders, no grid lines, no captions, no labels, no numbers, no watermarks. Crisp warm colorful 2D children's book cartoon, smooth confident outlines, light shading, recognizable simple objects, friendly never scary animals. Children for actions and emotions; adults with distinctive tools/uniform for jobs. Scenes also fit their cell with white around them. Exact row-major subjects below; do not reorder, combine, duplicate or omit. Blank specified cells remain pure white. Only language subject flashcards may include ABC or Ă Â Ê as instructed.\nRow 1, column 1: buffalo.\nRow 1, column 2: hamster.\nRow 1, column 3: crab.\nRow 2, column 1: shrimp.\nRow 2, column 2: octopus.\nRow 2, column 3: squid.\nRow 3, column 1: dolphin.\nRow 3, column 2: whale.\nRow 3, column 3: shark."
+    },
+    {
+      "file": "public/images/sheets/vocabulary-6.png",
+      "ids": [
+        "seahorse",
+        "starfish",
+        "jellyfish",
+        "parrot",
+        "owl",
+        "penguin",
+        "pigeon",
+        "sparrow",
+        "peacock"
+      ],
+      "prompt": "Use case: illustration-story. Asset type: original English Garden preschool vocabulary sprite sheet. Generate ONE perfectly SQUARE image with exactly 3 columns x 3 rows of equal square invisible cells on pure white. Centers must be at 1/6, 1/2, 5/6 width and height. Each independent illustration entirely inside its own cell with at least 15 percent white inset on every cell side. No borders, no grid lines, no captions, no labels, no numbers, no watermarks. Crisp warm colorful 2D children's book cartoon, smooth confident outlines, light shading, recognizable simple objects, friendly never scary animals. Children for actions and emotions; adults with distinctive tools/uniform for jobs. Scenes also fit their cell with white around them. Exact row-major subjects below; do not reorder, combine, duplicate or omit. Blank specified cells remain pure white. Only language subject flashcards may include ABC or Ă Â Ê as instructed.\nRow 1, column 1: seahorse.\nRow 1, column 2: starfish.\nRow 1, column 3: jellyfish.\nRow 2, column 1: parrot.\nRow 2, column 2: owl.\nRow 2, column 3: penguin.\nRow 3, column 1: pigeon.\nRow 3, column 2: sparrow.\nRow 3, column 3: peacock."
+    },
+    {
+      "file": "public/images/sheets/vocabulary-7.png",
+      "ids": [
+        "goose",
+        "bee",
+        "ant",
+        "ladybug",
+        "dragonfly",
+        "mosquito",
+        "fly",
+        "grasshopper",
+        "cabbage"
+      ],
+      "prompt": "Use case: illustration-story. Asset type: original English Garden preschool vocabulary sprite sheet. Generate ONE perfectly SQUARE image with exactly 3 columns x 3 rows of equal square invisible cells on pure white. Centers must be at 1/6, 1/2, 5/6 width and height. Each independent illustration entirely inside its own cell with at least 15 percent white inset on every cell side. No borders, no grid lines, no captions, no labels, no numbers, no watermarks. Crisp warm colorful 2D children's book cartoon, smooth confident outlines, light shading, recognizable simple objects, friendly never scary animals. Children for actions and emotions; adults with distinctive tools/uniform for jobs. Scenes also fit their cell with white around them. Exact row-major subjects below; do not reorder, combine, duplicate or omit. Blank specified cells remain pure white. Only language subject flashcards may include ABC or Ă Â Ê as instructed.\nRow 1, column 1: goose.\nRow 1, column 2: bee.\nRow 1, column 3: ant.\nRow 2, column 1: ladybug.\nRow 2, column 2: dragonfly.\nRow 2, column 3: mosquito.\nRow 3, column 1: fly.\nRow 3, column 2: grasshopper.\nRow 3, column 3: compact round pale green cabbage head."
+    },
+    {
+      "file": "public/images/sheets/vocabulary-8.png",
+      "ids": [
+        "lettuce",
+        "spinach",
+        "broccoli",
+        "cauliflower",
+        "cucumber",
+        "tomato",
+        "pumpkin",
+        "corn",
+        "peas"
+      ],
+      "prompt": "Use case: illustration-story. Asset type: original English Garden preschool vocabulary sprite sheet. Generate ONE perfectly SQUARE image with exactly 3 columns x 3 rows of equal square invisible cells on pure white. Centers must be at 1/6, 1/2, 5/6 width and height. Each independent illustration entirely inside its own cell with at least 15 percent white inset on every cell side. No borders, no grid lines, no captions, no labels, no numbers, no watermarks. Crisp warm colorful 2D children's book cartoon, smooth confident outlines, light shading, recognizable simple objects, friendly never scary animals. Children for actions and emotions; adults with distinctive tools/uniform for jobs. Scenes also fit their cell with white around them. Exact row-major subjects below; do not reorder, combine, duplicate or omit. Blank specified cells remain pure white. Only language subject flashcards may include ABC or Ă Â Ê as instructed.\nRow 1, column 1: loose leafy green lettuce head.\nRow 1, column 2: bunch of spinach broad dark green oval leaves.\nRow 1, column 3: broccoli.\nRow 2, column 1: cauliflower.\nRow 2, column 2: cucumber.\nRow 2, column 3: tomato.\nRow 3, column 1: pumpkin.\nRow 3, column 2: corn.\nRow 3, column 3: peas."
+    },
+    {
+      "file": "public/images/sheets/vocabulary-9.png",
+      "ids": [
+        "green-beans",
+        "water-spinach",
+        "carrot",
+        "potato",
+        "sweet-potato",
+        "radish",
+        "onion",
+        "garlic",
+        "ginger"
+      ],
+      "prompt": "Use case: illustration-story. Asset type: original English Garden preschool vocabulary sprite sheet. Generate ONE perfectly SQUARE image with exactly 3 columns x 3 rows of equal square invisible cells on pure white. Centers must be at 1/6, 1/2, 5/6 width and height. Each independent illustration entirely inside its own cell with at least 15 percent white inset on every cell side. No borders, no grid lines, no captions, no labels, no numbers, no watermarks. Crisp warm colorful 2D children's book cartoon, smooth confident outlines, light shading, recognizable simple objects, friendly never scary animals. Children for actions and emotions; adults with distinctive tools/uniform for jobs. Scenes also fit their cell with white around them. Exact row-major subjects below; do not reorder, combine, duplicate or omit. Blank specified cells remain pure white. Only language subject flashcards may include ABC or Ă Â Ê as instructed.\nRow 1, column 1: green beans.\nRow 1, column 2: bunch of water spinach, long hollow green stems narrow arrow-shaped leaves.\nRow 1, column 3: carrot.\nRow 2, column 1: potato.\nRow 2, column 2: sweet potato.\nRow 2, column 3: radish.\nRow 3, column 1: onion.\nRow 3, column 2: garlic.\nRow 3, column 3: ginger."
+    },
+    {
+      "file": "public/images/sheets/vocabulary-10.png",
+      "ids": [
+        "taro",
+        "mango",
+        "watermelon",
+        "grapes",
+        "strawberry",
+        "pineapple",
+        "papaya",
+        "guava",
+        "dragon-fruit"
+      ],
+      "prompt": "Use case: illustration-story. Asset type: original English Garden preschool vocabulary sprite sheet. Generate ONE perfectly SQUARE image with exactly 3 columns x 3 rows of equal square invisible cells on pure white. Centers must be at 1/6, 1/2, 5/6 width and height. Each independent illustration entirely inside its own cell with at least 15 percent white inset on every cell side. No borders, no grid lines, no captions, no labels, no numbers, no watermarks. Crisp warm colorful 2D children's book cartoon, smooth confident outlines, light shading, recognizable simple objects, friendly never scary animals. Children for actions and emotions; adults with distinctive tools/uniform for jobs. Scenes also fit their cell with white around them. Exact row-major subjects below; do not reorder, combine, duplicate or omit. Blank specified cells remain pure white. Only language subject flashcards may include ABC or Ă Â Ê as instructed.\nRow 1, column 1: taro.\nRow 1, column 2: mango.\nRow 1, column 3: watermelon.\nRow 2, column 1: grapes.\nRow 2, column 2: strawberry.\nRow 2, column 3: pineapple.\nRow 3, column 1: papaya.\nRow 3, column 2: guava.\nRow 3, column 3: dragon fruit."
+    },
+    {
+      "file": "public/images/sheets/vocabulary-11.png",
+      "ids": [
+        "coconut",
+        "pear",
+        "rose",
+        "sunflower",
+        "lotus",
+        "daisy",
+        "orchid",
+        "tulip",
+        "noodles"
+      ],
+      "prompt": "Use case: illustration-story. Asset type: original English Garden preschool vocabulary sprite sheet. Generate ONE perfectly SQUARE image with exactly 3 columns x 3 rows of equal square invisible cells on pure white. Centers must be at 1/6, 1/2, 5/6 width and height. Each independent illustration entirely inside its own cell with at least 15 percent white inset on every cell side. No borders, no grid lines, no captions, no labels, no numbers, no watermarks. Crisp warm colorful 2D children's book cartoon, smooth confident outlines, light shading, recognizable simple objects, friendly never scary animals. Children for actions and emotions; adults with distinctive tools/uniform for jobs. Scenes also fit their cell with white around them. Exact row-major subjects below; do not reorder, combine, duplicate or omit. Blank specified cells remain pure white. Only language subject flashcards may include ABC or Ă Â Ê as instructed.\nRow 1, column 1: coconut.\nRow 1, column 2: pear.\nRow 1, column 3: rose.\nRow 2, column 1: sunflower.\nRow 2, column 2: lotus.\nRow 2, column 3: daisy.\nRow 3, column 1: orchid.\nRow 3, column 2: tulip.\nRow 3, column 3: noodles."
+    },
+    {
+      "file": "public/images/sheets/vocabulary-12.png",
+      "ids": [
+        "porridge",
+        "sandwich",
+        "pizza",
+        "pancake",
+        "yogurt",
+        "ice-cream",
+        "orange-juice",
+        "apple-juice",
+        "coconut-water"
+      ],
+      "prompt": "Use case: illustration-story. Asset type: original English Garden preschool vocabulary sprite sheet. Generate ONE perfectly SQUARE image with exactly 3 columns x 3 rows of equal square invisible cells on pure white. Centers must be at 1/6, 1/2, 5/6 width and height. Each independent illustration entirely inside its own cell with at least 15 percent white inset on every cell side. No borders, no grid lines, no captions, no labels, no numbers, no watermarks. Crisp warm colorful 2D children's book cartoon, smooth confident outlines, light shading, recognizable simple objects, friendly never scary animals. Children for actions and emotions; adults with distinctive tools/uniform for jobs. Scenes also fit their cell with white around them. Exact row-major subjects below; do not reorder, combine, duplicate or omit. Blank specified cells remain pure white. Only language subject flashcards may include ABC or Ă Â Ê as instructed.\nRow 1, column 1: porridge.\nRow 1, column 2: sandwich.\nRow 1, column 3: pizza.\nRow 2, column 1: pancake.\nRow 2, column 2: yogurt.\nRow 2, column 3: ice cream.\nRow 3, column 1: glass of orange juice beside whole and sliced orange.\nRow 3, column 2: glass of golden apple juice beside apple.\nRow 3, column 3: opened green coconut with straw and clear glass of coconut water."
+    },
+    {
+      "file": "public/images/sheets/vocabulary-13.png",
+      "ids": [
+        "lemonade",
+        "smoothie",
+        "cocoa",
+        "car",
+        "bus",
+        "train",
+        "plane",
+        "boat",
+        "ship"
+      ],
+      "prompt": "Use case: illustration-story. Asset type: original English Garden preschool vocabulary sprite sheet. Generate ONE perfectly SQUARE image with exactly 3 columns x 3 rows of equal square invisible cells on pure white. Centers must be at 1/6, 1/2, 5/6 width and height. Each independent illustration entirely inside its own cell with at least 15 percent white inset on every cell side. No borders, no grid lines, no captions, no labels, no numbers, no watermarks. Crisp warm colorful 2D children's book cartoon, smooth confident outlines, light shading, recognizable simple objects, friendly never scary animals. Children for actions and emotions; adults with distinctive tools/uniform for jobs. Scenes also fit their cell with white around them. Exact row-major subjects below; do not reorder, combine, duplicate or omit. Blank specified cells remain pure white. Only language subject flashcards may include ABC or Ă Â Ê as instructed.\nRow 1, column 1: glass of pale lemonade beside cut lemons.\nRow 1, column 2: pink smoothie glass with strawberries and banana.\nRow 1, column 3: mug of brown cocoa beside cocoa beans.\nRow 2, column 1: car.\nRow 2, column 2: bus.\nRow 2, column 3: train.\nRow 3, column 1: plane.\nRow 3, column 2: small wooden rowboat with oars.\nRow 3, column 3: large ocean passenger ship."
+    },
+    {
+      "file": "public/images/sheets/vocabulary-14.png",
+      "ids": [
+        "motorbike",
+        "truck",
+        "taxi",
+        "ambulance",
+        "fire-engine",
+        "doctor",
+        "nurse",
+        "farmer",
+        "cook"
+      ],
+      "prompt": "Use case: illustration-story. Asset type: original English Garden preschool vocabulary sprite sheet. Generate ONE perfectly SQUARE image with exactly 3 columns x 3 rows of equal square invisible cells on pure white. Centers must be at 1/6, 1/2, 5/6 width and height. Each independent illustration entirely inside its own cell with at least 15 percent white inset on every cell side. No borders, no grid lines, no captions, no labels, no numbers, no watermarks. Crisp warm colorful 2D children's book cartoon, smooth confident outlines, light shading, recognizable simple objects, friendly never scary animals. Children for actions and emotions; adults with distinctive tools/uniform for jobs. Scenes also fit their cell with white around them. Exact row-major subjects below; do not reorder, combine, duplicate or omit. Blank specified cells remain pure white. Only language subject flashcards may include ABC or Ă Â Ê as instructed.\nRow 1, column 1: motorbike.\nRow 1, column 2: truck.\nRow 1, column 3: taxi.\nRow 2, column 1: ambulance.\nRow 2, column 2: fire engine.\nRow 2, column 3: doctor.\nRow 3, column 1: nurse.\nRow 3, column 2: farmer.\nRow 3, column 3: cook."
+    },
+    {
+      "file": "public/images/sheets/vocabulary-15.png",
+      "ids": [
+        "driver",
+        "police-officer",
+        "firefighter",
+        "dentist",
+        "pilot",
+        "builder",
+        "singer",
+        "soccer",
+        "basketball"
+      ],
+      "prompt": "Use case: illustration-story. Asset type: original English Garden preschool vocabulary sprite sheet. Generate ONE perfectly SQUARE image with exactly 3 columns x 3 rows of equal square invisible cells on pure white. Centers must be at 1/6, 1/2, 5/6 width and height. Each independent illustration entirely inside its own cell with at least 15 percent white inset on every cell side. No borders, no grid lines, no captions, no labels, no numbers, no watermarks. Crisp warm colorful 2D children's book cartoon, smooth confident outlines, light shading, recognizable simple objects, friendly never scary animals. Children for actions and emotions; adults with distinctive tools/uniform for jobs. Scenes also fit their cell with white around them. Exact row-major subjects below; do not reorder, combine, duplicate or omit. Blank specified cells remain pure white. Only language subject flashcards may include ABC or Ă Â Ê as instructed.\nRow 1, column 1: driver.\nRow 1, column 2: police officer.\nRow 1, column 3: firefighter.\nRow 2, column 1: dentist.\nRow 2, column 2: pilot.\nRow 2, column 3: builder.\nRow 3, column 1: singer.\nRow 3, column 2: soccer.\nRow 3, column 3: basketball."
+    },
+    {
+      "file": "public/images/sheets/vocabulary-16.png",
+      "ids": [
+        "badminton",
+        "tennis",
+        "swimming",
+        "running",
+        "cycling",
+        "skating",
+        "park",
+        "zoo",
+        "hospital"
+      ],
+      "prompt": "Use case: illustration-story. Asset type: original English Garden preschool vocabulary sprite sheet. Generate ONE perfectly SQUARE image with exactly 3 columns x 3 rows of equal square invisible cells on pure white. Centers must be at 1/6, 1/2, 5/6 width and height. Each independent illustration entirely inside its own cell with at least 15 percent white inset on every cell side. No borders, no grid lines, no captions, no labels, no numbers, no watermarks. Crisp warm colorful 2D children's book cartoon, smooth confident outlines, light shading, recognizable simple objects, friendly never scary animals. Children for actions and emotions; adults with distinctive tools/uniform for jobs. Scenes also fit their cell with white around them. Exact row-major subjects below; do not reorder, combine, duplicate or omit. Blank specified cells remain pure white. Only language subject flashcards may include ABC or Ă Â Ê as instructed.\nRow 1, column 1: badminton.\nRow 1, column 2: tennis.\nRow 1, column 3: swimming.\nRow 2, column 1: preschool child jogging on an athletics track in sports clothes.\nRow 2, column 2: cycling.\nRow 2, column 3: skating.\nRow 3, column 1: park.\nRow 3, column 2: zoo.\nRow 3, column 3: hospital."
+    },
+    {
+      "file": "public/images/sheets/vocabulary-17.png",
+      "ids": [
+        "market",
+        "supermarket",
+        "playground",
+        "library",
+        "bakery",
+        "restaurant",
+        "beach",
+        "mountain",
+        "river"
+      ],
+      "prompt": "Use case: illustration-story. Asset type: original English Garden preschool vocabulary sprite sheet. Generate ONE perfectly SQUARE image with exactly 3 columns x 3 rows of equal square invisible cells on pure white. Centers must be at 1/6, 1/2, 5/6 width and height. Each independent illustration entirely inside its own cell with at least 15 percent white inset on every cell side. No borders, no grid lines, no captions, no labels, no numbers, no watermarks. Crisp warm colorful 2D children's book cartoon, smooth confident outlines, light shading, recognizable simple objects, friendly never scary animals. Children for actions and emotions; adults with distinctive tools/uniform for jobs. Scenes also fit their cell with white around them. Exact row-major subjects below; do not reorder, combine, duplicate or omit. Blank specified cells remain pure white. Only language subject flashcards may include ABC or Ă Â Ê as instructed.\nRow 1, column 1: open air fruit and vegetable market stall with vendor.\nRow 1, column 2: supermarket interior with stocked aisle and shopping trolley.\nRow 1, column 3: playground.\nRow 2, column 1: library bookshelves with reading table.\nRow 2, column 2: bakery.\nRow 2, column 3: restaurant.\nRow 3, column 1: beach.\nRow 3, column 2: tall pointed rocky mountain with snowy peak.\nRow 3, column 3: winding blue river through green banks."
+    },
+    {
+      "file": "public/images/sheets/vocabulary-18.png",
+      "ids": [
+        "lake",
+        "sea",
+        "forest",
+        "hill",
+        "island",
+        "waterfall",
+        "field",
+        "happy",
+        "sad"
+      ],
+      "prompt": "Use case: illustration-story. Asset type: original English Garden preschool vocabulary sprite sheet. Generate ONE perfectly SQUARE image with exactly 3 columns x 3 rows of equal square invisible cells on pure white. Centers must be at 1/6, 1/2, 5/6 width and height. Each independent illustration entirely inside its own cell with at least 15 percent white inset on every cell side. No borders, no grid lines, no captions, no labels, no numbers, no watermarks. Crisp warm colorful 2D children's book cartoon, smooth confident outlines, light shading, recognizable simple objects, friendly never scary animals. Children for actions and emotions; adults with distinctive tools/uniform for jobs. Scenes also fit their cell with white around them. Exact row-major subjects below; do not reorder, combine, duplicate or omit. Blank specified cells remain pure white. Only language subject flashcards may include ABC or Ă Â Ê as instructed.\nRow 1, column 1: oval calm lake fully enclosed by green banks.\nRow 1, column 2: wide blue ocean waves and horizon.\nRow 1, column 3: forest.\nRow 2, column 1: single gently rounded green hill.\nRow 2, column 2: island.\nRow 2, column 3: waterfall.\nRow 3, column 1: field.\nRow 3, column 2: smiling cheerful child with relaxed happy pose.\nRow 3, column 3: sad."
+    },
+    {
+      "file": "public/images/sheets/vocabulary-19.png",
+      "ids": [
+        "angry",
+        "scared",
+        "surprised",
+        "sleepy",
+        "tired",
+        "excited",
+        "drawing",
+        "coloring",
+        "singing"
+      ],
+      "prompt": "Use case: illustration-story. Asset type: original English Garden preschool vocabulary sprite sheet. Generate ONE perfectly SQUARE image with exactly 3 columns x 3 rows of equal square invisible cells on pure white. Centers must be at 1/6, 1/2, 5/6 width and height. Each independent illustration entirely inside its own cell with at least 15 percent white inset on every cell side. No borders, no grid lines, no captions, no labels, no numbers, no watermarks. Crisp warm colorful 2D children's book cartoon, smooth confident outlines, light shading, recognizable simple objects, friendly never scary animals. Children for actions and emotions; adults with distinctive tools/uniform for jobs. Scenes also fit their cell with white around them. Exact row-major subjects below; do not reorder, combine, duplicate or omit. Blank specified cells remain pure white. Only language subject flashcards may include ABC or Ă Â Ê as instructed.\nRow 1, column 1: angry.\nRow 1, column 2: child hugging teddy, worried wide eyes, small benign shadow.\nRow 1, column 3: surprised.\nRow 2, column 1: child yawning and rubbing eyes in pajamas.\nRow 2, column 2: child sitting drooped and sweaty after exercise, eyes open.\nRow 2, column 3: child bouncing with arms raised in delight at wrapped present.\nRow 3, column 1: child using pencil to draw outline on white paper.\nRow 3, column 2: child coloring inside a flower outline with colorful crayons.\nRow 3, column 3: singing."
+    },
+    {
+      "file": "public/images/sheets/vocabulary-20.png",
+      "ids": [
+        "dancing",
+        "reading",
+        "gardening",
+        "cooking",
+        "flying-a-kite",
+        "playing-with-blocks",
+        "playing-with-bubbles",
+        "eat",
+        "drink"
+      ],
+      "prompt": "Use case: illustration-story. Asset type: original English Garden preschool vocabulary sprite sheet. Generate ONE perfectly SQUARE image with exactly 3 columns x 3 rows of equal square invisible cells on pure white. Centers must be at 1/6, 1/2, 5/6 width and height. Each independent illustration entirely inside its own cell with at least 15 percent white inset on every cell side. No borders, no grid lines, no captions, no labels, no numbers, no watermarks. Crisp warm colorful 2D children's book cartoon, smooth confident outlines, light shading, recognizable simple objects, friendly never scary animals. Children for actions and emotions; adults with distinctive tools/uniform for jobs. Scenes also fit their cell with white around them. Exact row-major subjects below; do not reorder, combine, duplicate or omit. Blank specified cells remain pure white. Only language subject flashcards may include ABC or Ă Â Ê as instructed.\nRow 1, column 1: dancing.\nRow 1, column 2: reading.\nRow 1, column 3: gardening.\nRow 2, column 1: cooking.\nRow 2, column 2: flying a kite.\nRow 2, column 3: playing with blocks.\nRow 3, column 1: playing with bubbles.\nRow 3, column 2: eat.\nRow 3, column 3: drink."
+    },
+    {
+      "file": "public/images/sheets/vocabulary-21.png",
+      "ids": [
+        "sleep",
+        "walk",
+        "run",
+        "jump",
+        "sit",
+        "stand",
+        "clap",
+        "wave",
+        "wash-hands"
+      ],
+      "prompt": "Use case: illustration-story. Asset type: original English Garden preschool vocabulary sprite sheet. Generate ONE perfectly SQUARE image with exactly 3 columns x 3 rows of equal square invisible cells on pure white. Centers must be at 1/6, 1/2, 5/6 width and height. Each independent illustration entirely inside its own cell with at least 15 percent white inset on every cell side. No borders, no grid lines, no captions, no labels, no numbers, no watermarks. Crisp warm colorful 2D children's book cartoon, smooth confident outlines, light shading, recognizable simple objects, friendly never scary animals. Children for actions and emotions; adults with distinctive tools/uniform for jobs. Scenes also fit their cell with white around them. Exact row-major subjects below; do not reorder, combine, duplicate or omit. Blank specified cells remain pure white. Only language subject flashcards may include ABC or Ă Â Ê as instructed.\nRow 1, column 1: sleep.\nRow 1, column 2: walk.\nRow 1, column 3: preschool child running quickly across grass.\nRow 2, column 1: jump.\nRow 2, column 2: sit.\nRow 2, column 3: stand.\nRow 3, column 1: clap.\nRow 3, column 2: wave.\nRow 3, column 3: wash hands."
+    },
+    {
+      "file": "public/images/sheets/vocabulary-22.png",
+      "ids": [
+        "brush-teeth",
+        "hug",
+        "smile",
+        "tidy-up",
+        "spring",
+        "summer",
+        "autumn",
+        "winter",
+        "sunny"
+      ],
+      "prompt": "Use case: illustration-story. Asset type: original English Garden preschool vocabulary sprite sheet. Generate ONE perfectly SQUARE image with exactly 3 columns x 3 rows of equal square invisible cells on pure white. Centers must be at 1/6, 1/2, 5/6 width and height. Each independent illustration entirely inside its own cell with at least 15 percent white inset on every cell side. No borders, no grid lines, no captions, no labels, no numbers, no watermarks. Crisp warm colorful 2D children's book cartoon, smooth confident outlines, light shading, recognizable simple objects, friendly never scary animals. Children for actions and emotions; adults with distinctive tools/uniform for jobs. Scenes also fit their cell with white around them. Exact row-major subjects below; do not reorder, combine, duplicate or omit. Blank specified cells remain pure white. Only language subject flashcards may include ABC or Ă Â Ê as instructed.\nRow 1, column 1: brush teeth.\nRow 1, column 2: hug.\nRow 1, column 3: close view of child gently smiling.\nRow 2, column 1: tidy up.\nRow 2, column 2: blossoming tree and flowers.\nRow 2, column 3: child in sunhat with sunshine and sandcastle.\nRow 3, column 1: tree with orange falling leaves.\nRow 3, column 2: bare snowy tree and snowman.\nRow 3, column 3: bright sun over green grass and small tree."
+    },
+    {
+      "file": "public/images/sheets/vocabulary-23.png",
+      "ids": [
+        "rainy",
+        "cloudy",
+        "windy",
+        "snowy",
+        "hot",
+        "cold",
+        "rainbow",
+        "classroom",
+        "student"
+      ],
+      "prompt": "Use case: illustration-story. Asset type: original English Garden preschool vocabulary sprite sheet. Generate ONE perfectly SQUARE image with exactly 3 columns x 3 rows of equal square invisible cells on pure white. Centers must be at 1/6, 1/2, 5/6 width and height. Each independent illustration entirely inside its own cell with at least 15 percent white inset on every cell side. No borders, no grid lines, no captions, no labels, no numbers, no watermarks. Crisp warm colorful 2D children's book cartoon, smooth confident outlines, light shading, recognizable simple objects, friendly never scary animals. Children for actions and emotions; adults with distinctive tools/uniform for jobs. Scenes also fit their cell with white around them. Exact row-major subjects below; do not reorder, combine, duplicate or omit. Blank specified cells remain pure white. Only language subject flashcards may include ABC or Ă Â Ê as instructed.\nRow 1, column 1: rainy.\nRow 1, column 2: cloudy.\nRow 1, column 3: windy.\nRow 2, column 1: snowy.\nRow 2, column 2: hot.\nRow 2, column 3: cold.\nRow 3, column 1: rainbow.\nRow 3, column 2: classroom.\nRow 3, column 3: student."
+    },
+    {
+      "file": "public/images/sheets/vocabulary-24.png",
+      "ids": [
+        "school-bus",
+        "english",
+        "vietnamese",
+        "math",
+        "art",
+        "music",
+        "pe",
+        "insect",
+        "queen"
+      ],
+      "prompt": "Use case: illustration-story. Asset type: original English Garden preschool vocabulary sprite sheet. Generate ONE perfectly SQUARE image with exactly 3 columns x 3 rows of equal square invisible cells on pure white. Centers must be at 1/6, 1/2, 5/6 width and height. Each independent illustration entirely inside its own cell with at least 15 percent white inset on every cell side. No borders, no grid lines, no captions, no labels, no numbers, no watermarks. Crisp warm colorful 2D children's book cartoon, smooth confident outlines, light shading, recognizable simple objects, friendly never scary animals. Children for actions and emotions; adults with distinctive tools/uniform for jobs. Scenes also fit their cell with white around them. Exact row-major subjects below; do not reorder, combine, duplicate or omit. Blank specified cells remain pure white. Only language subject flashcards may include ABC or Ă Â Ê as instructed.\nRow 1, column 1: yellow school bus with children visible in windows.\nRow 1, column 2: school learning card with large exact letters ABC and open book.\nRow 1, column 3: school learning card with large exact letters Ă Â Ê and open book.\nRow 2, column 1: abacus with colored counting beads and small numerals 1 2 3.\nRow 2, column 2: art.\nRow 2, column 3: music.\nRow 3, column 1: child stretching in sports clothes beside ball.\nRow 3, column 2: friendly six-legged beetle with visible head thorax abdomen and antennae.\nRow 3, column 3: queen."
+    },
+    {
+      "file": "public/images/sheets/vocabulary-25.png",
+      "ids": [
+        "sun",
+        "umbrella",
+        "van",
+        "box"
+      ],
+      "prompt": "Use case: illustration-story. Asset type: original English Garden preschool vocabulary sprite sheet. Generate ONE perfectly SQUARE image with exactly 3 columns x 3 rows of equal square invisible cells on pure white. Centers must be at 1/6, 1/2, 5/6 width and height. Each independent illustration entirely inside its own cell with at least 15 percent white inset on every cell side. No borders, no grid lines, no captions, no labels, no numbers, no watermarks. Crisp warm colorful 2D children's book cartoon, smooth confident outlines, light shading, recognizable simple objects, friendly never scary animals. Children for actions and emotions; adults with distinctive tools/uniform for jobs. Scenes also fit their cell with white around them. Exact row-major subjects below; do not reorder, combine, duplicate or omit. Blank specified cells remain pure white. Only language subject flashcards may include ABC or Ă Â Ê as instructed.\nRow 1, column 1: single smiling yellow sun with rays.\nRow 1, column 2: umbrella.\nRow 1, column 3: van.\nRow 2, column 1: box.\nRow 2, column 2: BLANK WHITE.\nRow 2, column 3: BLANK WHITE.\nRow 3, column 1: BLANK WHITE.\nRow 3, column 2: BLANK WHITE.\nRow 3, column 3: BLANK WHITE."
+    }
+  ]
+}
