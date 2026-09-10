@@ -34,6 +34,7 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { WordVisual } from './WordVisual';
+import { CelebrationCanvas } from './CelebrationCanvas';
 import {
   createQuestion as makeQuestion,
   reconcileProgress,
@@ -879,6 +880,9 @@ function EnglishGarden() {
                 aria-live="polite"
                 aria-labelledby="score-title"
               >
+                {scorePercent >= 70 && (
+                  <CelebrationCanvas score={scorePercent} />
+                )}
                 <div className="score-sparkles" aria-hidden="true">
                   ✦ · ✧ · ✦
                 </div>
@@ -888,11 +892,12 @@ function EnglishGarden() {
                 </div>
                 <h2 id="score-title">{scoreMessage}</h2>
                 <div className="score-number">
-                  <strong>{testCorrect}</strong>
-                  <span>/{currentTestTotal}</span>
+                  <strong>{scorePercent}</strong>
+                  <span>/100</span>
                 </div>
                 <p className="score-percent">
-                  {scorePercent}% câu đúng ngay lần chọn đầu tiên
+                  Đúng {testCorrect}/{currentTestTotal} câu ngay lần chọn đầu
+                  tiên
                 </p>
                 <Button
                   type="button"
