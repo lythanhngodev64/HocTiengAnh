@@ -7,7 +7,11 @@ import {
   allWords,
   wordsForTheme,
 } from '../src/catalogue.mjs';
-import { createQuestion, reconcileProgress } from '../src/learning.mjs';
+import {
+  createQuestion,
+  reconcileProgress,
+  recordCompletedTest,
+} from '../src/learning.mjs';
 
 test('41 topics, fixed educational sets, every legacy word retained', () => {
   assert.equal(themes.length, 41);
@@ -72,5 +76,79 @@ test('shared words count once; invalid stored progress cannot corrupt totals', (
     stars: 0,
     learnedIds: [],
     badges: [],
+    history: [],
   });
+});
+
+function completed(themeId = 'bedroom', id = 'test-1', mode = 'name') {
+  return {
+    id,
+    themeId,
+    mode,
+    completedAt: '2026-09-10T08:00:00.000Z',
+    answers: wordsForTheme(themeId)
+      .slice(0, 10)
+      .map((word, index) => ({ wordId: word.id, firstTryCorrect: index < 7 })),
+  };
+}
+
+test('history migration, completion, replay and reload retain exactly one result per session', () => {
+  const old = reconcileProgress({ stars: 8, learnedIds: ['cat'] });
+  assert.deepEqual(old.history, []);
+  const first = recordCompletedTest(old, completed());
+  assert.equal(first.history[0].score, 70);
+  assert.equal(first.history[0].correct, 7);
+  assert.equal(
+    first.history[0].answers.filter((a) => !a.firstTryCorrect).length,
+    3,
+  );
+  assert.equal(recordCompletedTest(first, completed()).history.length, 1);
+  const replay = recordCompletedTest(first, {
+    ...completed('bedroom', 'test-2'),
+    completedAt: '2026-09-11T08:00:00Z',
+  });
+  assert.equal(replay.history[0].id, 'test-2');
+  assert.deepEqual(
+    reconcileProgress(JSON.parse(JSON.stringify(replay))),
+    replay,
+  );
+  assert.equal(replay.stars, 8);
+  assert.deepEqual(replay.learnedIds, ['cat']);
+  assert.deepEqual(reconcileProgress(null).history, []);
+});
+
+test('short tests normalize to 100 and alphabet modes stay distinct', () => {
+  const short = completed('seasons');
+  short.answers[0].firstTryCorrect = false;
+  assert.equal(recordCompletedTest({}, short).history[0].score, 75);
+  const names = recordCompletedTest({}, completed('alphabet', 'names', 'name'));
+  const sounds = recordCompletedTest(
+    names,
+    completed('alphabet', 'sounds', 'sound'),
+  );
+  assert.deepEqual(
+    new Set(sounds.history.map((item) => item.mode)),
+    new Set(['name', 'sound']),
+  );
+});
+
+test('invalid, incomplete and duplicate-word results are not presented as completed tests', () => {
+  for (const entry of [
+    null,
+    {},
+    { ...completed(), completedAt: 'bad' },
+    { ...completed(), answers: completed().answers.slice(1) },
+    { ...completed(), answers: Array(10).fill(completed().answers[0]) },
+    completed('bedroom', 'bad-mode', 'sound'),
+  ]) {
+    assert.deepEqual(recordCompletedTest({}, entry).history, []);
+  }
+  assert.deepEqual(reconcileProgress({ history: {} }).history, []);
+  let progress = reconcileProgress(null);
+  for (let i = 0; i < 25; i++)
+    progress = recordCompletedTest(
+      progress,
+      completed('bedroom', `session-${i}`),
+    );
+  assert.equal(progress.history.length, 25);
 });

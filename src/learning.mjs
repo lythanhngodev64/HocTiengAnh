@@ -49,8 +49,67 @@ export function reconcileProgress(value) {
   return {
     stars,
     learnedIds,
+    history: reconcileHistory(value?.history),
     badges: themes
       .filter((theme) => theme.wordIds.every((id) => learnedIds.includes(id)))
       .map((theme) => theme.id),
   };
+}
+
+export function reconcileHistory(value) {
+  if (!Array.isArray(value)) return [];
+  const seen = new Set();
+  return value
+    .flatMap((entry) => {
+      const theme = themes.find((item) => item.id === entry?.themeId);
+      if (
+        !theme ||
+        typeof entry.id !== 'string' ||
+        !entry.id ||
+        seen.has(entry.id) ||
+        typeof entry.completedAt !== 'string' ||
+        !Number.isFinite(Date.parse(entry.completedAt)) ||
+        !['name', 'sound'].includes(entry.mode) ||
+        (entry.mode === 'sound' && theme.id !== 'alphabet') ||
+        !Array.isArray(entry.answers) ||
+        entry.answers.length !== Math.min(10, theme.wordIds.length)
+      )
+        return [];
+      const ids = new Set();
+      for (const answer of entry.answers) {
+        if (
+          !answer ||
+          !theme.wordIds.includes(answer.wordId) ||
+          ids.has(answer.wordId) ||
+          typeof answer.firstTryCorrect !== 'boolean'
+        )
+          return [];
+        ids.add(answer.wordId);
+      }
+      seen.add(entry.id);
+      const answers = entry.answers.map(({ wordId, firstTryCorrect }) => ({
+        wordId,
+        firstTryCorrect,
+      }));
+      const correct = answers.filter((answer) => answer.firstTryCorrect).length;
+      return [
+        {
+          id: entry.id,
+          completedAt: entry.completedAt,
+          themeId: theme.id,
+          mode: entry.mode,
+          answers,
+          correct,
+          score: Math.round((correct / answers.length) * 100),
+        },
+      ];
+    })
+    .sort((a, b) => Date.parse(b.completedAt) - Date.parse(a.completedAt));
+}
+
+export function recordCompletedTest(progress, entry) {
+  return reconcileProgress({
+    ...progress,
+    history: [...(progress.history ?? []), entry],
+  });
 }
