@@ -1,0 +1,133 @@
+{
+  "format": "[x, y, width, height] percentages relative to the full uncropped image",
+  "minimumRecommendedSceneWidthCssPx": 280,
+  "note": "Visually inspected all local PNGs. Bounds are touch zones, not segmentation masks; bathtub zone is slightly inset at right so the enlarged toothbrush zone remains nonoverlapping. Keep image aspect-ratio 1/1 and never cover-crop rooms.",
+  "bedroom": {
+    "bed": [
+      2,
+      45,
+      51,
+      48
+    ],
+    "pillow": [
+      3,
+      19,
+      36,
+      25
+    ],
+    "blanket": [
+      57,
+      58,
+      41,
+      30
+    ],
+    "lamp": [
+      41,
+      4,
+      18,
+      40
+    ],
+    "wardrobe": [
+      68,
+      4,
+      30,
+      42
+    ]
+  },
+  "living": {
+    "sofa": [
+      0,
+      49,
+      56,
+      34
+    ],
+    "table": [
+      59,
+      69,
+      39,
+      23
+    ],
+    "tv": [
+      58,
+      40,
+      38,
+      26
+    ],
+    "clock": [
+      9,
+      4,
+      31,
+      31
+    ],
+    "window": [
+      51,
+      1,
+      47,
+      36
+    ]
+  },
+  "kitchen": {
+    "fridge": [
+      2,
+      3,
+      28,
+      50
+    ],
+    "stove": [
+      35,
+      15,
+      30,
+      38
+    ],
+    "sink": [
+      69,
+      11,
+      30,
+      42
+    ],
+    "plate": [
+      8,
+      54,
+      38,
+      38
+    ],
+    "cup": [
+      58,
+      59,
+      37,
+      33
+    ]
+  },
+  "bathroom": {
+    "bathtub": [
+      1,
+      61,
+      44,
+      34
+    ],
+    "toilet": [
+      69,
+      14,
+      28,
+      47
+    ],
+    "towel": [
+      4,
+      5,
+      32,
+      50
+    ],
+    "toothbrush": [
+      46,
+      12,
+      16,
+      58
+    ],
+    "soap": [
+      62,
+      69,
+      35,
+      23
+    ]
+  }
+}

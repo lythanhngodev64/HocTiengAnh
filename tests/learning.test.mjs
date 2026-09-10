@@ -77,6 +77,7 @@ test('shared words count once; invalid stored progress cannot corrupt totals', (
     learnedIds: [],
     badges: [],
     history: [],
+    practice: {},
   });
 });
 

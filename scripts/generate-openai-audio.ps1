@@ -3,6 +3,9 @@ param(
     [switch]$CedarSample,
     [switch]$ClearSample,
     [switch]$Phonics,
+    [switch]$Guidance,
+    [switch]$GuidanceSampleA,
+    [switch]$GuidanceTeacher,
     [string]$Theme
 )
 
@@ -23,6 +26,9 @@ try {
 
     $env:OPENAI_API_KEY = $taskApiKey
     $taskArguments = @('scripts/generate-openai-audio.mjs')
+    if ($Guidance) { $taskArguments = @('scripts/generate-guidance.mjs') }
+    if ($GuidanceSampleA) { $taskArguments = @('scripts/generate-guidance.mjs', '--sample-a') }
+    if ($GuidanceTeacher) { $taskArguments = @('scripts/generate-guidance.mjs', '--teacher-sample') }
     if ($Force) {
         $taskArguments += '--force'
     }

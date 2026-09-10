@@ -17,6 +17,7 @@ import { groups, themes, totalWords, wordById } from './vocabulary';
 
 export type TestAnswer = { wordId: string; firstTryCorrect: boolean };
 export type CompletedTest = {
+  activity: 'test' | 'learn';
   id: string;
   completedAt: string;
   themeId: string;
@@ -26,6 +27,7 @@ export type CompletedTest = {
   score: number;
 };
 export type LearningProgress = {
+  practice: Record<string, { at: string; firstTryCorrect: boolean }>;
   stars: number;
   learnedIds: string[];
   badges: string[];
@@ -171,7 +173,7 @@ export function LearningJourney({
                           <time dateTime={entry.completedAt}>
                             {formatTime(entry.completedAt)}
                           </time>{' '}
-                          ·{' '}
+                          · {entry.activity === 'learn' ? 'Học' : 'Kiểm tra'} ·{' '}
                           {entry.themeId === 'alphabet'
                             ? entry.mode === 'sound'
                               ? 'Âm chữ'
@@ -182,8 +184,9 @@ export function LearningJourney({
                       <span
                         className={`journey-score ${entry.score >= 70 ? 'celebrated' : ''}`}
                       >
-                        {entry.score >= 70 ? '★ ' : ''}
-                        {entry.score}/100
+                        {entry.activity === 'learn'
+                          ? `🌼 ${entry.answers.length} từ`
+                          : `${entry.score >= 70 ? '★ ' : ''}${entry.score}/100`}
                       </span>
                       <span>
                         Đúng lần đầu: {entry.correct}/{entry.answers.length} câu

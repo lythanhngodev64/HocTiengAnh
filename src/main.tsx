@@ -40,10 +40,14 @@ import {
 } from '@/components/ui/dialog';
 import { WordVisual } from './WordVisual';
 import { CelebrationCanvas } from './CelebrationCanvas';
+import { GardenHome } from './GardenHome';
+import { StudyStudio } from './StudyStudio';
+import { guidance } from './guidance.mjs';
 import {
   createQuestion as makeQuestion,
   reconcileProgress,
   recordCompletedTest,
+  recordPracticeAnswer,
 } from './learning.mjs';
 import {
   themes,
@@ -171,6 +175,18 @@ function isAudioManifest(value: unknown): value is AudioManifest {
 }
 
 function EnglishGarden() {
+  const [screen, setScreen] = useState<'home' | 'learn' | 'test'>('home');
+  const [studyDirty, setStudyDirty] = useState(false);
+  const [studyVersion, setStudyVersion] = useState(0);
+  const [studyTheme, setStudyTheme] = useState('bedroom');
+  const [studyChoiceCount, setStudyChoiceCount] = useState(2);
+  const [pendingNavigation, setPendingNavigation] = useState<
+    (() => void) | null
+  >(null);
+  const [guidanceApproved, setGuidanceApproved] = useState<
+    Record<string, string>
+  >({});
+  const guideUrl = useRef<string | null>(null);
   const [progress, setProgress] = useState<LearningProgress>(loadProgress);
   const [journeyOpen, setJourneyOpen] = useState(false);
   const [storageError, setStorageError] = useState('');
@@ -210,6 +226,98 @@ function EnglishGarden() {
   const speechToken = useRef(0);
   const activeAudio = useRef<HTMLAudioElement | null>(null);
   const assetBase = import.meta.env.BASE_URL;
+
+  useEffect(() => {
+    let active = true;
+    fetch(`${assetBase}audio/guidance/manifest.json`)
+      .then((response) => (response.ok ? response.json() : null))
+      .then((value) => {
+        const manifest = value as { approved?: Record<string, string> } | null;
+        if (
+          active &&
+          manifest?.approved &&
+          typeof manifest.approved === 'object'
+        )
+          setGuidanceApproved(
+            Object.fromEntries(
+              Object.entries(manifest.approved).filter(
+                ([, digest]) =>
+                  typeof digest === 'string' && /^[a-f0-9]{64}$/.test(digest),
+              ),
+            ),
+          );
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, [assetBase]);
+
+  function requestLeave(action: () => void) {
+    stopSpeaking();
+    const testDirty =
+      screen === 'test' && !testComplete && (round > 1 || feedback !== 'ready');
+    if ((screen === 'learn' && studyDirty) || testDirty)
+      setPendingNavigation(() => action);
+    else action();
+  }
+  function navigate(next: 'home' | 'learn' | 'test') {
+    if (next === screen) {
+      stopSpeaking();
+      setJourneyOpen(false);
+      return;
+    }
+    requestLeave(() => {
+      restartTest();
+      setStudyVersion((value) => value + 1);
+      setStudyDirty(false);
+      setJourneyOpen(false);
+      setScreen(next);
+      setAudioMessage('');
+      window.scrollTo(0, 0);
+    });
+  }
+
+  async function speakGuide(id: string) {
+    stopSpeaking();
+    const text = guidance[id as keyof typeof guidance];
+    if (!text) return;
+    const expected = guidanceApproved[id];
+    if (!expected) {
+      setAudioMessage(
+        `${text} (Giọng hướng dẫn tiếng Việt đang chờ tạo hoặc nghe duyệt.)`,
+      );
+      return;
+    }
+    const token = speechToken.current;
+    setAudioMessage(text);
+    try {
+      const response = await fetch(`${assetBase}audio/guidance/${id}.mp3`);
+      if (!response.ok) throw new Error('Missing guidance');
+      const bytes = await response.arrayBuffer();
+      const digest = Array.from(
+        new Uint8Array(await crypto.subtle.digest('SHA-256', bytes)),
+      )
+        .map((value) => value.toString(16).padStart(2, '0'))
+        .join('');
+      if (digest !== expected) throw new Error('Recording needs review');
+      if (speechToken.current !== token) return;
+      const url = URL.createObjectURL(
+        new Blob([bytes], { type: 'audio/mpeg' }),
+      );
+      guideUrl.current = url;
+      const audio = new Audio(url);
+      activeAudio.current = audio;
+      audio.onended = () => {
+        URL.revokeObjectURL(url);
+        if (guideUrl.current === url) guideUrl.current = null;
+      };
+      await audio.play();
+    } catch {
+      if (speechToken.current === token)
+        setAudioMessage(`${text} (Chưa phát được hướng dẫn đã duyệt.)`);
+    }
+  }
 
   const activeTheme = themes.find((theme) => theme.id === activeThemeId)!;
   const activeWords = useMemo(
@@ -342,6 +450,10 @@ function EnglishGarden() {
   );
 
   function stopSpeaking() {
+    if (guideUrl.current) {
+      URL.revokeObjectURL(guideUrl.current);
+      guideUrl.current = null;
+    }
     speechToken.current += 1;
     setPreviewWordId(null);
     const audio = activeAudio.current;
@@ -552,23 +664,31 @@ function EnglishGarden() {
           question.target.meaning +
           '.',
       );
-      setProgress((currentProgress) => {
-        const isNewWord = !currentProgress.learnedIds.includes(
+      const at = new Date().toISOString();
+      setProgress((current) =>
+        recordPracticeAnswer(
+          current,
           question.target.id,
-        );
-        const learnedIds = isNewWord
-          ? [...currentProgress.learnedIds, question.target.id]
-          : currentProgress.learnedIds;
-        return reconcileProgress({
-          ...currentProgress,
-          stars: currentProgress.stars + (isNewWord ? 1 : 0),
-          learnedIds,
-        });
-      });
+          alphabetMode,
+          !questionHadMistake,
+          at,
+        ),
+      );
       return;
     }
 
     setFeedback('wrong');
+    const at = new Date().toISOString();
+    setProgress((current) =>
+      recordPracticeAnswer(
+        current,
+        question.target.id,
+        alphabetMode,
+        false,
+        at,
+        false,
+      ),
+    );
     setQuestionHadMistake(true);
     setWrongOptionIds((currentIds) =>
       currentIds.includes(option.id) ? currentIds : [...currentIds, option.id],
@@ -626,6 +746,8 @@ function EnglishGarden() {
       return;
     }
     setProgress(emptyProgress);
+    setStudyVersion((value) => value + 1);
+    setStudyDirty(false);
     progressReadFailed = false;
     setStorageError('');
     restartTest(alphabetMode, []);
@@ -687,6 +809,8 @@ function EnglishGarden() {
     const onKeyDown = (event: KeyboardEvent) => {
       if (
         themePickerOpen ||
+        screen !== 'test' ||
+        !!pendingNavigation ||
         journeyOpen ||
         resetOpen ||
         feedback === 'correct' ||
@@ -729,7 +853,15 @@ function EnglishGarden() {
 
       <div className="garden-shell">
         <header className="garden-header">
-          <a className="garden-brand" href="./" aria-label="Về đầu bài học">
+          <a
+            className="garden-brand"
+            href="./"
+            aria-label="Về trang chính"
+            onClick={(event) => {
+              event.preventDefault();
+              navigate('home');
+            }}
+          >
             <span className="brand-seed" aria-hidden="true">
               A
             </span>
@@ -740,6 +872,27 @@ function EnglishGarden() {
           </a>
 
           <div className="header-progress" aria-label="Tiến độ của bé">
+            {screen !== 'home' && (
+              <nav className="mode-nav" aria-label="Chế độ">
+                <Button variant="outline" onClick={() => navigate('home')}>
+                  ⌂ Trang chính
+                </Button>
+                <Button
+                  variant="outline"
+                  aria-pressed={screen === 'learn'}
+                  onClick={() => navigate('learn')}
+                >
+                  Học
+                </Button>
+                <Button
+                  variant="outline"
+                  aria-pressed={screen === 'test'}
+                  onClick={() => navigate('test')}
+                >
+                  Kiểm tra
+                </Button>
+              </nav>
+            )}
             <Button
               ref={journeyButton}
               className="journey-open-button"
@@ -808,6 +961,31 @@ function EnglishGarden() {
             </AlertDialog>
           </div>
         </header>
+        <AlertDialog
+          open={!!pendingNavigation}
+          onOpenChange={(open) => {
+            if (!open) setPendingNavigation(null);
+          }}
+        >
+          <AlertDialogContent className="reset-progress-dialog">
+            <AlertDialogTitle>Dừng lượt đang làm?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Lượt đang dở chưa được ghi vào lịch sử. Các từ và sao đã nhận vẫn
+              được giữ.
+            </AlertDialogDescription>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Làm tiếp</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => {
+                  pendingNavigation?.();
+                  setPendingNavigation(null);
+                }}
+              >
+                Dừng và chuyển
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
 
         {storageError && (
           <p className="storage-error" role="alert">
@@ -823,7 +1001,67 @@ function EnglishGarden() {
             }}
           />
         )}
-        <div hidden={journeyOpen}>
+        {!journeyOpen && screen === 'home' && (
+          <GardenHome
+            onLearn={() => navigate('learn')}
+            onTest={() => navigate('test')}
+            onJourney={() => {
+              stopSpeaking();
+              setJourneyOpen(true);
+            }}
+          />
+        )}
+        <div hidden={journeyOpen || screen !== 'learn'}>
+          {screen === 'learn' && (
+            <StudyStudio
+              initialTheme={studyTheme}
+              initialCount={studyChoiceCount}
+              onThemeChange={setStudyTheme}
+              onCountChange={setStudyChoiceCount}
+              key={studyVersion}
+              progress={progress}
+              phonicsReady={phonicsReady}
+              onSpeak={(word, slow, mode) =>
+                speakWord(word, slow, 'gallery', mode)
+              }
+              onStop={stopSpeaking}
+              onGuide={(id) => void speakGuide(id)}
+              onDirty={setStudyDirty}
+              onMistake={(wordId, mode) => {
+                const at = new Date().toISOString();
+                setProgress((current) =>
+                  recordPracticeAnswer(current, wordId, mode, false, at, false),
+                );
+              }}
+              onHome={() => navigate('home')}
+              onAnswer={(wordId, mode, firstTryCorrect) => {
+                const at = new Date().toISOString();
+                setProgress((current) =>
+                  recordPracticeAnswer(
+                    current,
+                    wordId,
+                    mode,
+                    firstTryCorrect,
+                    at,
+                  ),
+                );
+              }}
+              onComplete={(entry) =>
+                setProgress((current) => recordCompletedTest(current, entry))
+              }
+            />
+          )}
+          <p className="study-audio-status" role="status">
+            {audioMessage}
+          </p>
+          <p className="study-note">
+            Giọng đọc AI · OpenAI Coral.{' '}
+            {Object.keys(guidanceApproved).length < Object.keys(guidance).length
+              ? 'Lời hướng dẫn tiếng Việt đang chờ tạo hoặc nghe duyệt; hiện có hướng dẫn bằng chữ.'
+              : ''}
+          </p>
+        </div>
+        <div hidden={journeyOpen || screen !== 'test'}>
           <section
             className="welcome-strip welcome-strip-unified"
             aria-labelledby="garden-title"
@@ -901,7 +1139,10 @@ function EnglishGarden() {
                           variant="outline"
                           className="topic-choice"
                           aria-pressed={activeThemeId === theme.id}
-                          onClick={() => chooseTheme(theme.id)}
+                          onClick={() => {
+                            setThemePickerOpen(false);
+                            requestLeave(() => chooseTheme(theme.id));
+                          }}
                         >
                           <span className="theme-icon" aria-hidden="true">
                             {theme.icon}
@@ -941,8 +1182,10 @@ function EnglishGarden() {
                     <Button
                       aria-pressed={alphabetMode === 'name'}
                       onClick={() => {
-                        setAlphabetMode('name');
-                        restartTest('name');
+                        requestLeave(() => {
+                          setAlphabetMode('name');
+                          restartTest('name');
+                        });
                       }}
                     >
                       Tên chữ
@@ -951,8 +1194,10 @@ function EnglishGarden() {
                       aria-pressed={alphabetMode === 'sound'}
                       disabled={!phonicsReady}
                       onClick={() => {
-                        setAlphabetMode('sound');
-                        restartTest('sound');
+                        requestLeave(() => {
+                          setAlphabetMode('sound');
+                          restartTest('sound');
+                        });
                       }}
                     >
                       Âm chữ

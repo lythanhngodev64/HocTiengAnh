@@ -46,10 +46,26 @@ export function reconcileProgress(value) {
     typeof value?.stars === 'number' && Number.isFinite(value.stars)
       ? Math.max(0, Math.floor(value.stars))
       : 0;
+  const history = reconcileHistory(value?.history);
+  const practice = reconcilePractice(value?.practice);
+  for (const entry of history) {
+    for (const answer of entry.answers) {
+      const key = `${answer.wordId}:${entry.mode}`;
+      if (
+        !practice[key] ||
+        Date.parse(practice[key].at) < Date.parse(entry.completedAt)
+      )
+        practice[key] = {
+          at: entry.completedAt,
+          firstTryCorrect: answer.firstTryCorrect,
+        };
+    }
+  }
   return {
     stars,
     learnedIds,
-    history: reconcileHistory(value?.history),
+    history,
+    practice,
     badges: themes
       .filter((theme) => theme.wordIds.every((id) => learnedIds.includes(id)))
       .map((theme) => theme.id),
@@ -62,6 +78,7 @@ export function reconcileHistory(value) {
   return value
     .flatMap((entry) => {
       const theme = themes.find((item) => item.id === entry?.themeId);
+      const activity = entry?.activity ?? 'test';
       if (
         !theme ||
         typeof entry.id !== 'string' ||
@@ -70,9 +87,11 @@ export function reconcileHistory(value) {
         typeof entry.completedAt !== 'string' ||
         !Number.isFinite(Date.parse(entry.completedAt)) ||
         !['name', 'sound'].includes(entry.mode) ||
+        !['test', 'learn'].includes(activity) ||
         (entry.mode === 'sound' && theme.id !== 'alphabet') ||
         !Array.isArray(entry.answers) ||
-        entry.answers.length !== Math.min(10, theme.wordIds.length)
+        entry.answers.length !==
+          Math.min(activity === 'learn' ? 5 : 10, theme.wordIds.length)
       )
         return [];
       const ids = new Set();
@@ -95,6 +114,7 @@ export function reconcileHistory(value) {
       return [
         {
           id: entry.id,
+          activity,
           completedAt: entry.completedAt,
           themeId: theme.id,
           mode: entry.mode,
@@ -112,4 +132,108 @@ export function recordCompletedTest(progress, entry) {
     ...progress,
     history: [...(progress.history ?? []), entry],
   });
+}
+
+export function reconcilePractice(value) {
+  /** @type {Record<string, {at: string, firstTryCorrect: boolean}>} */
+  const result = {};
+  if (!value || typeof value !== 'object' || Array.isArray(value))
+    return result;
+  const ids = new Map(vocabulary.map((word) => [word.id, word]));
+  for (const [key, item] of Object.entries(value)) {
+    const [id, mode] = key.split(':');
+    if (
+      !ids.has(id) ||
+      !['name', 'sound'].includes(mode) ||
+      (mode === 'sound' && ids.get(id).kind !== 'letter') ||
+      typeof item?.at !== 'string' ||
+      !Number.isFinite(Date.parse(item.at)) ||
+      typeof item.firstTryCorrect !== 'boolean'
+    )
+      continue;
+    result[key] = { at: item.at, firstTryCorrect: item.firstTryCorrect };
+  }
+  return result;
+}
+
+export function recordPracticeAnswer(
+  progress,
+  wordId,
+  mode,
+  firstTryCorrect,
+  at,
+  markLearned = true,
+) {
+  const learnedIds = progress.learnedIds ?? [];
+  return reconcileProgress({
+    ...progress,
+    learnedIds: markLearned
+      ? [...new Set([...learnedIds, wordId])]
+      : learnedIds,
+    stars:
+      (progress.stars ?? 0) +
+      (!markLearned || learnedIds.includes(wordId) ? 0 : 1),
+    practice: {
+      ...progress.practice,
+      [`${wordId}:${mode}`]: { at, firstTryCorrect },
+    },
+  });
+}
+
+export function selectLessonWords(themeId, progress, mode = 'name') {
+  const words = wordsForTheme(themeId);
+  const practice = reconcileProgress(progress).practice;
+  const learned = new Set(progress?.learnedIds ?? []);
+  const previous = words.filter(
+    (word) =>
+      practice[`${word.id}:${mode}`] ||
+      (mode === 'name' && learned.has(word.id)),
+  );
+  const last = (word) => practice[`${word.id}:${mode}`];
+  previous.sort(
+    (a, b) =>
+      Number(last(a)?.firstTryCorrect !== false) -
+        Number(last(b)?.firstTryCorrect !== false) ||
+      Date.parse(last(a)?.at ?? '1970-01-01') -
+        Date.parse(last(b)?.at ?? '1970-01-01'),
+  );
+  const chosen = [];
+  const seen = new Set();
+  const add = (word) => {
+    const key = mode === 'sound' ? word.phoneme : word.id;
+    if (chosen.length < Math.min(5, words.length) && !seen.has(key)) {
+      chosen.push(word);
+      seen.add(key);
+    }
+  };
+  for (const word of previous) {
+    if (chosen.length >= 2) break;
+    add(word);
+  }
+  words.filter((word) => !previous.includes(word)).forEach(add);
+  previous.forEach(add);
+  return chosen;
+}
+
+export function lessonOptions(
+  words,
+  target,
+  count = 2,
+  mode = 'name',
+  random = Math.random,
+) {
+  const seen = new Set([mode === 'sound' ? target.phoneme : target.id]);
+  const others = shuffle(
+    words.filter((word) => word.id !== target.id),
+    random,
+  ).filter((word) => {
+    const key = mode === 'sound' ? word.phoneme : word.id;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+  return shuffle(
+    [target, ...others.slice(0, Math.max(1, Math.min(4, count) - 1))],
+    random,
+  );
 }

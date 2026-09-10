@@ -1,0 +1,22 @@
+{
+  "voice": "marin",
+  "model": "gpt-4o-mini-tts",
+  "approved": {
+    "welcome": "76dfdd01283388028c2b4a243cc0e2084b4d027c2e5c4b67f6dfe598b7dc38a6",
+    "intro": "aab3b6395e4b956ee1e83aa25c6ac48fdfcf8d2ec280aeb46276db769f63df4a",
+    "choose": "13725c609d76eb64286356390d0f176592f7baea634550e95d930d260318cba1",
+    "explore": "198c4aef646472ea1f75d8b4daa727ef481a28136e9325452ada34acec7a245c",
+    "find": "b72f9035af7c2711b6302443155eced25e71342ca3e8da99066323791a068a86",
+    "retry": "9fd19eaaec13e984a0b8a626993a711222d3746357c3d36bfa9a50406f3aef36",
+    "complete": "75cab5af422c0886c6da11a31ed15d19b0980e461eacea88da4af9db3541d7d0"
+  },
+  "generated": {
+    "welcome": "d39d46119f89ee1758a7a13f6591f62544af86caeef574d8b46877bc2157f451",
+    "intro": "8aeef478e8ee576e570b1e7c2bf5fffd34f606f850d409d5ba0d6846fc9d0901",
+    "choose": "d375b34e43d9240899c5839d20e47b65324d2558fc34549e2cda228eaacba6a3",
+    "explore": "7cda3985ddf8823c0480a963b5ad6aeeac5c341257c387d6a671a7a7b55f1a73",
+    "find": "3291b4897c978f354ff02b037289cb0efcbf7e955643b5e6910e6670079b291d",
+    "retry": "cbd58c305cfbb415451b3049ea55c080c2a86aa792dc0fdc5438c270d49e6a77",
+    "complete": "3b3825e38743c4332bb5a06b64fb624c1f8aaf02d1b05348e028b21c76c990ae"
+  }
+}
