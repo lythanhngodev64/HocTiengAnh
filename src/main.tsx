@@ -1,8 +1,25 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
+import { RotateCcw } from 'lucide-react';
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from '@/components/ui/tooltip';
 
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from '@/components/ui/alert-dialog';
 import {
   Select,
   SelectContent,
@@ -149,6 +166,8 @@ function EnglishGarden() {
     createQuestion('bedroom', []),
   );
   const [themePickerOpen, setThemePickerOpen] = useState(false);
+  const [resetOpen, setResetOpen] = useState(false);
+  const [resetError, setResetError] = useState('');
   const [selectedGroup, setSelectedGroup] = useState('home');
   const [galleryPage, setGalleryPage] = useState(0);
   const [alphabetMode, setAlphabetMode] = useState<AlphabetMode>('name');
@@ -543,9 +562,32 @@ function EnglishGarden() {
     setAudioMessage('Một từ mới đã sẵn sàng. Hãy nghe thật kỹ.');
   }
 
-  function restartTest(mode: AlphabetMode = alphabetMode) {
+  function resetProgress() {
+    const emptyProgress = reconcileProgress(null);
+    try {
+      window.localStorage.setItem(
+        progressStorageKey,
+        JSON.stringify(emptyProgress),
+      );
+    } catch {
+      setResetError(
+        'Chưa thể xóa tiến độ đã lưu. Hãy cho phép trình duyệt lưu dữ liệu rồi thử lại.',
+      );
+      return;
+    }
+    setProgress(emptyProgress);
+    restartTest(alphabetMode, []);
+    setGalleryPage(0);
+    setResetOpen(false);
+    setAudioMessage('Đã đặt lại tiến độ. Mình cùng học lại từ đầu nhé!');
+  }
+
+  function restartTest(
+    mode: AlphabetMode = alphabetMode,
+    learnedIds = progress.learnedIds,
+  ) {
     stopSpeaking();
-    setQuestion(createQuestion(activeThemeId, progress.learnedIds, [], mode));
+    setQuestion(createQuestion(activeThemeId, learnedIds, [], mode));
     setFeedback('ready');
     setWrongOptionIds([]);
     setRound(1);
@@ -581,7 +623,12 @@ function EnglishGarden() {
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      if (themePickerOpen || feedback === 'correct' || testComplete) {
+      if (
+        themePickerOpen ||
+        resetOpen ||
+        feedback === 'correct' ||
+        testComplete
+      ) {
         return;
       }
 
@@ -637,10 +684,59 @@ function EnglishGarden() {
               <span aria-hidden="true">✦</span> {progress.badges.length}/
               {themes.length}
             </span>
+            <AlertDialog open={resetOpen} onOpenChange={setResetOpen}>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger
+                    render={
+                      <AlertDialogTrigger
+                        render={
+                          <Button
+                            variant="outline"
+                            className="reset-progress-button"
+                          />
+                        }
+                        aria-label="Đặt lại tiến độ"
+                        onClick={() => {
+                          stopSpeaking();
+                          setResetError('');
+                        }}
+                      />
+                    }
+                  >
+                    <RotateCcw size={20} aria-hidden="true" />
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" className="text-sm">
+                    Đặt lại tiến độ
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <AlertDialogContent className="reset-progress-dialog">
+                <AlertDialogTitle>Đặt lại toàn bộ tiến độ?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Xóa tất cả sao, từ đã nhớ và huy hiệu trên trình duyệt này,
+                  đồng thời bắt đầu lại bài đang học. Không thể hoàn tác. Bài
+                  học và giọng đọc vẫn được giữ nguyên.
+                </AlertDialogDescription>
+                {resetError && <p role="alert">{resetError}</p>}
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Giữ tiến độ</AlertDialogCancel>
+                  <AlertDialogAction
+                    variant="destructive"
+                    onClick={resetProgress}
+                  >
+                    Xóa tiến độ
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </header>
 
-        <section className="welcome-strip" aria-labelledby="garden-title">
+        <section
+          className="welcome-strip welcome-strip-unified"
+          aria-labelledby="garden-title"
+        >
           <div>
             <p className="section-kicker">Khu vườn từ vựng</p>
             <h1 id="garden-title">Mỗi ngày một ít, bé nhớ được nhiều!</h1>
@@ -662,9 +758,6 @@ function EnglishGarden() {
               aria-label={'Đã nhớ ' + learnedPercent + ' phần trăm số từ'}
             />
           </div>
-        </section>
-
-        <div className="theme-tabs">
           <div className="current-theme-bar">
             <span>
               <span aria-hidden="true">{activeTheme.icon}</span>{' '}
@@ -682,6 +775,9 @@ function EnglishGarden() {
               Đổi chủ đề
             </Button>
           </div>
+        </section>
+
+        <div className="theme-tabs">
           <Dialog open={themePickerOpen} onOpenChange={setThemePickerOpen}>
             <DialogContent className="topic-dialog">
               <DialogTitle>Bé muốn khám phá gì?</DialogTitle>

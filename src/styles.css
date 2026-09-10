@@ -4,7 +4,17 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@font-face {
+  font-family: 'Nunito';
+  src: url('../public/fonts/nunito/Nunito-Variable.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 200 1000;
+  font-display: swap;
+}
+
 @theme inline {
+  --font-sans: 'Nunito', Arial, sans-serif;
+  --font-heading: 'Nunito', Arial, sans-serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-primary: var(--primary);
@@ -44,7 +54,16 @@ body {
   min-height: 100vh;
   margin: 0;
   color: var(--foreground);
-  font-family: Nunito, ui-rounded, 'Arial Rounded MT Bold', Arial, sans-serif;
+  font-family: 'Nunito', Arial, sans-serif;
+  font-weight: 400;
+}
+
+button,
+input,
+select,
+textarea,
+.cn-font-heading {
+  font-family: 'Nunito', Arial, sans-serif;
 }
 
 button,
@@ -128,7 +147,7 @@ a {
   box-shadow: 0 3px 0 #b9ce69;
   color: #354a09;
   font-size: 1.5rem;
-  font-weight: 900;
+  font-weight: 700;
 }
 
 .garden-brand strong,
@@ -145,7 +164,7 @@ a {
   margin-top: 0.08rem;
   color: #748354;
   font-size: 0.73rem;
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .header-progress {
@@ -163,7 +182,7 @@ a {
   gap: 0.28rem;
   border-radius: 999px;
   font-size: 0.83rem;
-  font-weight: 900;
+  font-weight: 700;
   white-space: nowrap;
 }
 
@@ -208,7 +227,7 @@ a {
   margin: 0 0 0.25rem;
   color: #6d841d;
   font-size: 0.73rem;
-  font-weight: 950;
+  font-weight: 700;
   letter-spacing: 0.09em;
   text-transform: uppercase;
 }
@@ -217,8 +236,9 @@ a {
 .panel-heading h2,
 .gallery-heading h3 {
   margin: 0;
+  font-weight: 700;
   color: #27390a;
-  letter-spacing: -0.045em;
+  letter-spacing: -0.015em;
 }
 
 .welcome-strip h1 {
@@ -244,7 +264,7 @@ a {
   background: rgb(255 255 255 / 72%);
   color: #657747;
   font-size: 0.81rem;
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .word-progress strong {
@@ -357,14 +377,14 @@ a {
 
 .theme-trigger strong {
   font-size: 0.95rem;
-  font-weight: 900;
+  font-weight: 700;
 }
 
 .theme-trigger small {
   margin-top: 0.15rem;
   color: #7a895c;
   font-size: 0.73rem;
-  font-weight: 750;
+  font-weight: 700;
 }
 
 .theme-done {
@@ -380,7 +400,7 @@ a {
   background: #7ba526;
   color: white;
   font-size: 0.75rem;
-  font-weight: 950;
+  font-weight: 700;
 }
 
 .learning-panel {
@@ -431,7 +451,7 @@ a {
   margin: 0 0 0.56rem;
   color: #405411;
   font-size: 1rem;
-  font-weight: 900;
+  font-weight: 700;
 }
 
 .listen-buttons {
@@ -447,7 +467,7 @@ a {
   border-radius: 0.82rem;
   font-family: inherit;
   font-size: 0.94rem;
-  font-weight: 950;
+  font-weight: 700;
 }
 
 .word-play-button {
@@ -485,7 +505,7 @@ a {
   margin: 0.54rem 0 0;
   color: #728054;
   font-size: 0.81rem;
-  font-weight: 750;
+  font-weight: 700;
 }
 
 .voice-setting {
@@ -501,20 +521,20 @@ a {
 .voice-label {
   color: #627644;
   font-size: 0.76rem;
-  font-weight: 900;
+  font-weight: 700;
 }
 
 .ai-voice-name {
   color: #40520f;
   font-size: 1rem;
-  font-weight: 950;
+  font-weight: 700;
 }
 
 .ai-disclosure {
   margin: 0;
   color: #728054;
   font-size: 0.76rem;
-  font-weight: 720;
+  font-weight: 700;
   line-height: 1.35;
 }
 
@@ -525,14 +545,14 @@ a {
   background: white;
   color: #40520f;
   font-family: inherit;
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .voice-note {
   margin: 0;
   color: #a95b47;
   font-size: 0.72rem;
-  font-weight: 750;
+  font-weight: 700;
 }
 
 .quiz-grid {
@@ -620,7 +640,7 @@ a {
   background: white;
   color: #566f12;
   font-size: 0.88rem;
-  font-weight: 950;
+  font-weight: 700;
 }
 
 .answer-reveal {
@@ -633,13 +653,13 @@ a {
 .answer-reveal strong {
   color: #405b0d;
   font-size: 1rem;
-  font-weight: 950;
+  font-weight: 700;
 }
 
 .answer-reveal small {
   color: #6e8050;
   font-size: 0.77rem;
-  font-weight: 750;
+  font-weight: 700;
 }
 
 .answer-mark {
@@ -647,7 +667,7 @@ a {
   right: 0.85rem;
   color: #5a9012;
   font-size: 1.45rem;
-  font-weight: 950;
+  font-weight: 700;
 }
 
 .feedback-band {
@@ -675,7 +695,7 @@ a {
   gap: 0.65rem;
   color: #62734a;
   font-size: 0.93rem;
-  font-weight: 850;
+  font-weight: 700;
 }
 
 .feedback-text p {
@@ -865,7 +885,7 @@ a {
 .score-sparkles {
   color: #df9f12;
   font-size: 1.35rem;
-  font-weight: 950;
+  font-weight: 700;
   letter-spacing: 0.25em;
 }
 
@@ -873,7 +893,7 @@ a {
   margin: 0;
   color: #708146;
   font-size: 0.82rem;
-  font-weight: 950;
+  font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -901,19 +921,19 @@ a {
 
 .score-number strong {
   font-size: clamp(3.5rem, 9vw, 6rem);
-  font-weight: 1000;
+  font-weight: 700;
 }
 
 .score-number span {
   font-size: clamp(1.35rem, 3vw, 2rem);
-  font-weight: 950;
+  font-weight: 700;
 }
 
 .score-percent {
   margin: 0 0 0.45rem;
   color: #5e713a;
   font-size: 0.95rem;
-  font-weight: 850;
+  font-weight: 700;
 }
 
 .restart-test-button {
@@ -926,7 +946,7 @@ a {
   box-shadow: 0 4px 0 #cf9212;
   color: #533b00;
   font-family: inherit;
-  font-weight: 950;
+  font-weight: 700;
 }
 
 .gallery-card.wide-art .gallery-picture {
@@ -946,7 +966,7 @@ a {
   overflow: hidden;
   color: #3b550e;
   font-size: 0.94rem;
-  font-weight: 950;
+  font-weight: 700;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -956,7 +976,7 @@ a {
   overflow: hidden;
   color: #728054;
   font-size: 0.75rem;
-  font-weight: 750;
+  font-weight: 700;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -973,14 +993,14 @@ a {
   background: #7ca928;
   color: white;
   font-size: 0.67rem;
-  font-weight: 950;
+  font-weight: 700;
 }
 
 .keyboard-hint {
   margin: 0.8rem auto 0;
   color: #75855a;
   font-size: 0.76rem;
-  font-weight: 750;
+  font-weight: 700;
   text-align: center;
 }
 
@@ -1342,7 +1362,7 @@ a {
 }
 .letter-symbol {
   font-size: clamp(2rem, 6vw, 4.5rem);
-  font-weight: 800;
+  font-weight: 700;
   color: #3866a2;
   white-space: nowrap;
 }
@@ -1644,6 +1664,148 @@ a {
   }
   .word-gallery {
     padding-block: 0.7rem;
+  }
+}
+
+.garden-header {
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.header-progress {
+  flex-wrap: wrap;
+}
+
+.reset-progress-button,
+.reset-progress-dialog button {
+  min-height: 44px;
+  font-size: 0.875rem;
+}
+
+.reset-progress-dialog {
+  max-width: min(26rem, calc(100vw - 2rem));
+  padding: 1.5rem;
+  border: 1px solid #d6e0bf;
+  border-radius: 1.25rem;
+  background: #ffffff;
+  color: #263416;
+  box-shadow: 0 20px 70px rgb(20 35 10 / 30%);
+}
+
+.reset-progress-dialog [data-slot='alert-dialog-title'] {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.reset-progress-dialog [data-slot='alert-dialog-footer'] {
+  margin: 0;
+  padding: 1rem 0 0;
+  border-top: 1px solid #e3e8db;
+  background: #ffffff;
+  gap: 0.75rem;
+}
+
+.reset-progress-dialog [data-slot='alert-dialog-cancel'] {
+  background: #f1f6e8;
+  color: #344a18;
+  border: 1px solid #b9ce98;
+}
+
+.reset-progress-dialog [data-slot='alert-dialog-action'] {
+  background: #b42318;
+  color: #ffffff;
+  border: 1px solid #b42318;
+}
+
+.reset-progress-dialog [data-slot='alert-dialog-action']:hover {
+  background: #912018;
+}
+
+.reset-progress-dialog button:focus-visible {
+  outline: 3px solid #58732d;
+  outline-offset: 3px;
+}
+
+.reset-progress-button {
+  width: 44px;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.reset-progress-dialog [data-slot='alert-dialog-description'] {
+  color: #48533c;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.welcome-strip.welcome-strip-unified {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 11rem minmax(19rem, auto);
+  gap: 1rem;
+  padding: 0.65rem 1rem;
+}
+
+.welcome-strip-unified h1 {
+  font-size: clamp(1.15rem, 1.7vw, 1.5rem);
+}
+
+.welcome-strip-unified .word-progress {
+  width: 100%;
+  padding: 0.5rem 0.65rem;
+  font-size: 0.875rem;
+}
+
+.welcome-strip-unified .current-theme-bar {
+  min-width: 0;
+  margin: 0;
+  padding: 0 0 0 1rem;
+  border-left: 1px solid #d0dfa8;
+  border-radius: 0;
+  background: transparent;
+}
+
+.welcome-strip-unified .current-theme-bar > span {
+  gap: 0.35rem 0.5rem;
+}
+
+.welcome-strip-unified .change-theme-button {
+  flex-shrink: 0;
+}
+
+@media (max-width: 999px) {
+  .welcome-strip.welcome-strip-unified {
+    grid-template-columns: minmax(0, 1fr) 11rem;
+  }
+
+  .welcome-strip-unified .current-theme-bar {
+    grid-column: 1 / -1;
+    border-left: 0;
+    border-top: 1px solid #d0dfa8;
+    padding: 0.5rem 0 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .welcome-strip.welcome-strip-unified {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.5rem;
+    padding: 0.65rem;
+  }
+
+  .welcome-strip-unified .word-progress {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .welcome-strip-unified .word-progress > span {
+    flex-shrink: 0;
+  }
+
+  .welcome-strip-unified .garden-progress {
+    margin-top: 0;
   }
 }
 
