@@ -1,0 +1,55 @@
+.home-content {
+  pointer-events: none;
+}
+.home-content button {
+  pointer-events: auto;
+}
+.garden-interactions {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.garden-animal-hit {
+  position: absolute;
+  top: 0;
+  left: 0;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 45%;
+  background: transparent;
+  cursor: pointer;
+  pointer-events: auto;
+  touch-action: manipulation;
+}
+.garden-animal-hit:focus-visible {
+  outline: 3px solid #245515;
+  outline-offset: 2px;
+  background: #ffffff20;
+}
+.garden-motion-toggle {
+  position: absolute;
+  bottom: 12px;
+  left: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid #c5dc91;
+  border-radius: 24px;
+  background: #fffffff0;
+  color: #315017;
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+  pointer-events: auto;
+}
+.garden-motion-toggle:focus-visible {
+  outline: 3px solid #245515;
+  outline-offset: 2px;
+}
+@media (max-width: 600px) {
+  .garden-home .home-content { padding-bottom: 190px; }
+}
