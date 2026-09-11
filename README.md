@@ -5,7 +5,9 @@ Web tiếng Anh cho bé 3–5 tuổi: **41 chủ đề, 427 mục học riêng b
 ## Học và chơi
 
 - Chọn **Đổi chủ đề**, chọn một trong 7 nhóm rồi chọn bài học.
-- Mỗi bài nghe–chọn có tối đa 10 câu khác nhau. Chỉ lựa chọn đúng ngay lần đầu mới được tính điểm; chọn sai vẫn được thử lại.
+- Mỗi chủ đề có **Bài 1 và Bài 2**, mỗi bài kiểm tra tối đa **5 câu**, lấy từ hai nhóm từ riêng. Chủ đề ít từ có bài ngắn hơn (4 mùa chia thành hai bài, mỗi bài 2 câu). Nhóm nhiều từ sẽ luân phiên từ chưa luyện/lâu chưa luyện khi làm lại.
+- Chỉ lựa chọn đúng ngay lần đầu mới được tính điểm, quy đổi về thang **100**; chọn sai vẫn được thử lại. Chọn bài khác khi đang làm dở sẽ hỏi xác nhận; mở Quá trình học rồi quay lại không mất lượt đang làm.
+- Lịch sử mới ghi rõ Bài 1/Bài 2; các bài kiểm tra cũ vẫn giữ nguyên số câu và điểm, không bị gán lại số bài.
 - Bảng điểm có màu, sao và lời động viên theo kết quả. Sao và từ đã nhớ được giữ khi mở rộng danh mục; huy hiệu tính lại theo thành viên chủ đề.
 - Góc từ vựng có tối đa 8 thẻ mỗi trang.
 - Bảng chữ cái gồm tên chữ và một âm cơ bản cho mỗi chữ. Âm chữ chưa nghe duyệt bị khóa và không dùng giọng máy thay thế.
@@ -22,7 +24,7 @@ Mở địa chỉ được in ra, thường là http://localhost:5173/.
 
 ## Nội dung
 
-Trạng thái hoàn thiện và kết quả kiểm tra: [docs/implementation-status.md](docs/implementation-status.md).
+Thay đổi kiểm tra ngắn mới nhất: [docs/short-tests-status.md](docs/short-tests-status.md). Trạng thái đợt mở rộng nội dung trước đây: [docs/implementation-status.md](docs/implementation-status.md).
 
 `src/catalogue.mjs` là nguồn dữ liệu dùng chung cho web, kiểm tra và tạo giọng. Danh mục cũ giữ trong `src/vocabulary-data.json` để bảo toàn 120 mã từ đã có. `src/illustrations.json` ánh xạ các hình mới tới ô trong ảnh minh họa 3×3.
 

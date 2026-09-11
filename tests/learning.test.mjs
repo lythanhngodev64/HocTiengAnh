@@ -27,7 +27,7 @@ test('41 topics, fixed educational sets, every legacy word retained', () => {
   for (const word of legacy.words)
     assert.ok(vocabulary.some((w) => w.id === word.id));
 });
-test('every topic has complete nonrepeating tests and four distinct answers', () => {
+test('legacy question generator retains nonrepeating targets and four distinct answers', () => {
   for (const theme of themes) {
     const excluded = [];
     for (let round = 0; round < Math.min(10, theme.wordIds.length); round++) {
@@ -118,7 +118,7 @@ test('history migration, completion, replay and reload retain exactly one result
   assert.deepEqual(reconcileProgress(null).history, []);
 });
 
-test('short tests normalize to 100 and alphabet modes stay distinct', () => {
+test('legacy short tests normalize to 100 and alphabet modes stay distinct', () => {
   const short = completed('seasons');
   short.answers[0].firstTryCorrect = false;
   assert.equal(recordCompletedTest({}, short).history[0].score, 75);

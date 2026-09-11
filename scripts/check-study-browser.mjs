@@ -49,7 +49,7 @@ try {
   }
   await page.setViewportSize({ width: 1366, height: 768 });
   await page.getByRole('button', { name: 'Học Làm quen từng chút' }).click();
-  await page.getByRole('button', { name: '▶ Bắt đầu học' }).click();
+  await page.getByRole('button', { name: 'Bắt đầu học', exact: true }).click();
   await page.getByRole('button', { name: 'Tiếp →', exact: true }).click();
   await page
     .getByRole('button', { name: 'Quá trình học', exact: true })
@@ -156,7 +156,9 @@ try {
   await page.getByRole('button', { name: 'Nghe và tìm', exact: true }).click();
   await page.locator('.room-hotspot').nth(1).click();
   await page.locator('.room-hotspot').first().click();
-  await page.getByRole('button', { name: 'Tìm đồ vật tiếp →' }).waitFor();
+  await page
+    .getByRole('button', { name: 'Tìm đồ vật tiếp', exact: true })
+    .waitFor();
   assert.equal(
     (
       await page.evaluate(() =>
@@ -177,7 +179,10 @@ try {
       document.querySelector('.voice-note')?.textContent?.includes('Coral') ||
       document.body.textContent.includes('OpenAI · Coral'),
   );
-  for (let i = 0; i < 10; i++) {
+  await page
+    .getByRole('button', { name: 'Bài 1 · 5 câu', exact: true })
+    .waitFor();
+  for (let i = 0; i < 5; i++) {
     await page.getByRole('button', { name: 'Nghe từ', exact: true }).click();
     const source = await page.evaluate(() => window.__playedAudio);
     const word = source.split('/').pop().replace('.mp3', '');
@@ -194,19 +199,26 @@ try {
     await right.click();
     await page
       .getByRole('button', {
-        name: i === 9 ? 'Xem điểm' : 'Câu mới',
+        name: i === 4 ? 'Xem điểm' : 'Câu mới',
         exact: false,
       })
       .click();
   }
-  assert.equal(await page.locator('.score-number strong').innerText(), '90');
-  assert.ok((await page.locator('.score-card').innerText()).includes('90'));
+  assert.equal(await page.locator('.score-number strong').innerText(), '80');
+  assert.ok((await page.locator('.score-card').innerText()).includes('80'));
   stored = await page.evaluate(() =>
     JSON.parse(localStorage.getItem('english-garden.learning-progress.v2')),
   );
   assert.equal(stored.history.length, 2);
   assert.equal(stored.history[0].activity, 'test');
-  assert.equal(stored.history[0].score, 90);
+  assert.equal(stored.history[0].score, 80);
+  assert.equal(stored.history[0].testPart, 1);
+  assert.equal(stored.history[0].answers.length, 5);
+  await page.getByRole('button', { name: 'Sang Bài 2', exact: true }).click();
+  assert.equal(
+    await page.locator('.round-chip').innerText(),
+    'Bài 2 · Câu 1/5',
+  );
   await page
     .getByRole('button', { name: '⌂ Trang chính', exact: true })
     .click();

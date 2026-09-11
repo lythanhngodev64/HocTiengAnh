@@ -20,9 +20,16 @@ export function createQuestion(
   if (!available.length) throw new Error('No unasked words left in this test');
   const unlearned = available.filter((word) => !learnedIds.includes(word.id));
   const target = shuffle(unlearned.length ? unlearned : available)[0];
+  return questionForTarget(words, target, mode);
+}
+
+function questionForTarget(words, target, mode, random = Math.random) {
   // C and K share /k/. Never put both in one phonics question, even as distractors.
   const seen = new Set([mode === 'sound' ? target.phoneme : target.id]);
-  const distractors = shuffle(words.filter((w) => w.id !== target.id))
+  const distractors = shuffle(
+    words.filter((w) => w.id !== target.id),
+    random,
+  )
     .filter((word) => {
       const key = mode === 'sound' ? word.phoneme : word.id;
       if (seen.has(key)) return false;
@@ -30,7 +37,102 @@ export function createQuestion(
       return true;
     })
     .slice(0, 3);
-  return { target, options: shuffle([target, ...distractors]) };
+  return { target, options: shuffle([target, ...distractors], random) };
+}
+
+export function wordsForTestPart(themeId, testPart) {
+  if (![1, 2].includes(testPart)) throw new Error('Invalid test part');
+  const words = wordsForTheme(themeId);
+  const middle = Math.ceil(words.length / 2);
+  return testPart === 1 ? words.slice(0, middle) : words.slice(middle);
+}
+
+export function createTestSession(
+  themeId,
+  testPart,
+  progress,
+  mode = 'name',
+  random = Math.random,
+) {
+  if (
+    !['name', 'sound'].includes(mode) ||
+    (mode === 'sound' && themeId !== 'alphabet')
+  )
+    throw new Error('Invalid test mode');
+  const words = wordsForTheme(themeId);
+  const pool = wordsForTestPart(themeId, testPart);
+  if (!pool.length) throw new Error('Empty test part');
+  const practice = reconcileProgress(progress).practice;
+  const last = (word) => practice[`${word.id}:${mode}`];
+  // Shuffle ties first, then prioritize never-practised and least-recent words.
+  const targets = shuffle(pool, random)
+    .sort((a, b) => {
+      const aLast = last(a);
+      const bLast = last(b);
+      if (!aLast || !bLast) return Number(!!aLast) - Number(!!bLast);
+      return Date.parse(aLast.at) - Date.parse(bLast.at);
+    })
+    .slice(0, 5);
+  return {
+    id: crypto.randomUUID(),
+    themeId,
+    testPart,
+    mode,
+    questions: targets.map((target) =>
+      questionForTarget(words, target, mode, random),
+    ),
+    index: 0,
+    answers: [],
+    wrongOptionIds: [],
+    started: false,
+    completed: false,
+  };
+}
+
+// Session/word guards also reject events queued before a restart or next question.
+export function answerTestSession(session, sessionId, wordId, optionId) {
+  const question = session.questions[session.index];
+  if (
+    session.id !== sessionId ||
+    session.completed ||
+    question.target.id !== wordId ||
+    session.answers.length > session.index ||
+    !question.options.some((word) => word.id === optionId)
+  )
+    return session;
+  if (optionId !== wordId) {
+    if (session.wrongOptionIds.includes(optionId)) return session;
+    return {
+      ...session,
+      started: true,
+      wrongOptionIds: [...session.wrongOptionIds, optionId],
+    };
+  }
+  return {
+    ...session,
+    started: true,
+    answers: [
+      ...session.answers,
+      { wordId, firstTryCorrect: session.wrongOptionIds.length === 0 },
+    ],
+  };
+}
+
+export function advanceTestSession(session, sessionId, wordId) {
+  if (
+    session.id !== sessionId ||
+    session.completed ||
+    session.questions[session.index].target.id !== wordId ||
+    session.answers.length !== session.index + 1
+  )
+    return session;
+  if (session.answers.length === session.questions.length)
+    return { ...session, completed: true };
+  return { ...session, index: session.index + 1, wrongOptionIds: [] };
+}
+
+export function isTestInProgress(session) {
+  return session.started && !session.completed;
 }
 
 export function reconcileProgress(value) {
@@ -79,6 +181,13 @@ export function reconcileHistory(value) {
     .flatMap((entry) => {
       const theme = themes.find((item) => item.id === entry?.themeId);
       const activity = entry?.activity ?? 'test';
+      const hasPart = entry?.testPart !== undefined;
+      if (hasPart && (activity !== 'test' || ![1, 2].includes(entry.testPart)))
+        return [];
+      const pool =
+        theme && hasPart
+          ? wordsForTestPart(theme.id, entry.testPart).map((word) => word.id)
+          : theme?.wordIds;
       if (
         !theme ||
         typeof entry.id !== 'string' ||
@@ -91,14 +200,14 @@ export function reconcileHistory(value) {
         (entry.mode === 'sound' && theme.id !== 'alphabet') ||
         !Array.isArray(entry.answers) ||
         entry.answers.length !==
-          Math.min(activity === 'learn' ? 5 : 10, theme.wordIds.length)
+          Math.min(activity === 'learn' || hasPart ? 5 : 10, pool.length)
       )
         return [];
       const ids = new Set();
       for (const answer of entry.answers) {
         if (
           !answer ||
-          !theme.wordIds.includes(answer.wordId) ||
+          !pool.includes(answer.wordId) ||
           ids.has(answer.wordId) ||
           typeof answer.firstTryCorrect !== 'boolean'
         )
@@ -115,6 +224,7 @@ export function reconcileHistory(value) {
         {
           id: entry.id,
           activity,
+          ...(hasPart ? { testPart: entry.testPart } : {}),
           completedAt: entry.completedAt,
           themeId: theme.id,
           mode: entry.mode,

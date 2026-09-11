@@ -18,6 +18,7 @@ import { groups, themes, totalWords, wordById } from './vocabulary';
 export type TestAnswer = { wordId: string; firstTryCorrect: boolean };
 export type CompletedTest = {
   activity: 'test' | 'learn';
+  testPart?: 1 | 2;
   id: string;
   completedAt: string;
   themeId: string;
@@ -173,7 +174,11 @@ export function LearningJourney({
                           <time dateTime={entry.completedAt}>
                             {formatTime(entry.completedAt)}
                           </time>{' '}
-                          · {entry.activity === 'learn' ? 'Học' : 'Kiểm tra'} ·{' '}
+                          · {entry.activity === 'learn' ? 'Học' : 'Kiểm tra'}
+                          {entry.testPart !== undefined
+                            ? ` · Bài ${entry.testPart}`
+                            : ''}{' '}
+                          ·{' '}
                           {entry.themeId === 'alphabet'
                             ? entry.mode === 'sound'
                               ? 'Âm chữ'

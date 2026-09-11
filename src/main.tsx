@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { RotateCcw, ChartNoAxesCombined } from 'lucide-react';
+import { RotateCcw, ChartNoAxesCombined, ArrowRight } from 'lucide-react';
 import {
   LearningJourney,
   type LearningProgress,
@@ -44,7 +44,11 @@ import { GardenHome } from './GardenHome';
 import { StudyStudio } from './StudyStudio';
 import { guidance } from './guidance.mjs';
 import {
-  createQuestion as makeQuestion,
+  createTestSession as makeTestSession,
+  answerTestSession,
+  advanceTestSession,
+  isTestInProgress,
+  wordsForTestPart,
   reconcileProgress,
   recordCompletedTest,
   recordPracticeAnswer,
@@ -85,16 +89,28 @@ type AudioManifest = {
 
 const progressStorageKey = 'english-garden.learning-progress.v2';
 const optionLetters = ['A', 'B', 'C', 'D'];
-const questionsPerTest = 10;
 let progressReadFailed = false;
 
 type AlphabetMode = 'name' | 'sound';
-const createQuestion = makeQuestion as (
+type TestPart = 1 | 2;
+type TestSession = {
+  id: string;
+  themeId: string;
+  testPart: TestPart;
+  mode: AlphabetMode;
+  questions: Quiz[];
+  index: number;
+  answers: TestAnswer[];
+  wrongOptionIds: string[];
+  started: boolean;
+  completed: boolean;
+};
+const createTestSession = makeTestSession as (
   themeId: string,
-  learnedIds?: string[],
-  excludedIds?: string[],
+  testPart: TestPart,
+  progress: LearningProgress,
   mode?: AlphabetMode,
-) => Quiz;
+) => TestSession;
 
 function isThemeId(value: string): value is ThemeId {
   return themes.some((theme) => theme.id === value);
@@ -190,29 +206,33 @@ function EnglishGarden() {
   const [progress, setProgress] = useState<LearningProgress>(loadProgress);
   const [journeyOpen, setJourneyOpen] = useState(false);
   const [storageError, setStorageError] = useState('');
-  const testSession = useRef({
-    id: crypto.randomUUID(),
-    answers: [] as TestAnswer[],
-    completed: false,
-  });
+  const [testRun, setTestRun] = useState<TestSession>(() =>
+    createTestSession('bedroom', 1, progress),
+  );
+  const testSession = useRef(testRun);
+  const question = testRun.questions[testRun.index];
+  const testPart = testRun.testPart;
+  const round = testRun.index + 1;
+  const wrongOptionIds = testRun.wrongOptionIds;
+  const questionHadMistake = wrongOptionIds.length > 0;
+  const testComplete = testRun.completed;
+  const testCorrect = testRun.answers.filter(
+    (answer) => answer.firstTryCorrect,
+  ).length;
+  const feedback: Feedback =
+    testRun.answers.length > testRun.index
+      ? 'correct'
+      : questionHadMistake
+        ? 'wrong'
+        : 'ready';
   const journeyButton = useRef<HTMLButtonElement>(null);
   const [activeThemeId, setActiveThemeId] = useState<ThemeId>('bedroom');
-  const [question, setQuestion] = useState<Quiz>(() =>
-    createQuestion('bedroom', []),
-  );
   const [themePickerOpen, setThemePickerOpen] = useState(false);
   const [resetOpen, setResetOpen] = useState(false);
   const [resetError, setResetError] = useState('');
   const [selectedGroup, setSelectedGroup] = useState('home');
   const [galleryPage, setGalleryPage] = useState(0);
   const [alphabetMode, setAlphabetMode] = useState<AlphabetMode>('name');
-  const [feedback, setFeedback] = useState<Feedback>('ready');
-  const [wrongOptionIds, setWrongOptionIds] = useState<string[]>([]);
-  const [round, setRound] = useState(1);
-  const [testCorrect, setTestCorrect] = useState(0);
-  const [questionHadMistake, setQuestionHadMistake] = useState(false);
-  const [testedIds, setTestedIds] = useState<string[]>([]);
-  const [testComplete, setTestComplete] = useState(false);
   const [audioMessage, setAudioMessage] = useState('Bấm “Nghe từ” để bắt đầu.');
   const [voices, setVoices] =
     useState<SpeechSynthesisVoice[]>(loadInitialVoices);
@@ -256,7 +276,7 @@ function EnglishGarden() {
   function requestLeave(action: () => void) {
     stopSpeaking();
     const testDirty =
-      screen === 'test' && !testComplete && (round > 1 || feedback !== 'ready');
+      screen === 'test' && isTestInProgress(testSession.current);
     if ((screen === 'learn' && studyDirty) || testDirty)
       setPendingNavigation(() => action);
     else action();
@@ -268,7 +288,7 @@ function EnglishGarden() {
       return;
     }
     requestLeave(() => {
-      restartTest();
+      restartTest(alphabetMode, progress, 1);
       setStudyVersion((value) => value + 1);
       setStudyDirty(false);
       setJourneyOpen(false);
@@ -355,7 +375,7 @@ function EnglishGarden() {
     progress.learnedIds.includes(word.id),
   ).length;
   const isThemeComplete = learnedInTheme === activeWords.length;
-  const currentTestTotal = Math.min(questionsPerTest, activeWords.length);
+  const currentTestTotal = testRun.questions.length;
   const scorePercent = Math.round((testCorrect / currentTestTotal) * 100);
   const scoreLevel =
     scorePercent >= 90
@@ -543,6 +563,8 @@ function EnglishGarden() {
   ) {
     if (context === 'quiz') {
       setPreviewWordId(null);
+      if (!testSession.current.started && !testSession.current.completed)
+        updateTestRun({ ...testSession.current, started: true });
     }
 
     const token = speechToken.current + 1;
@@ -634,29 +656,23 @@ function EnglishGarden() {
   function answerOption(option: VocabularyWord) {
     if (
       journeyOpen ||
-      feedback === 'correct' ||
-      testSession.current.completed ||
-      testSession.current.answers.some(
-        (answer) => answer.wordId === question.target.id,
-      )
-    ) {
+      screen !== 'test' ||
+      pendingNavigation ||
+      resetOpen ||
+      themePickerOpen
+    )
       return;
-    }
+    const previous = testSession.current;
+    const next = answerTestSession(
+      previous,
+      testRun.id,
+      question.target.id,
+      option.id,
+    ) as TestSession;
+    if (next === previous) return;
+    updateTestRun(next);
 
     if (option.id === question.target.id) {
-      testSession.current.answers.push({
-        wordId: question.target.id,
-        firstTryCorrect: !questionHadMistake,
-      });
-      setFeedback('correct');
-      if (!questionHadMistake) {
-        setTestCorrect((currentScore) => currentScore + 1);
-      }
-      setTestedIds((currentIds) =>
-        currentIds.includes(question.target.id)
-          ? currentIds
-          : [...currentIds, question.target.id],
-      );
       setAudioMessage(
         'Tuyệt vời! ' +
           question.target.word +
@@ -670,14 +686,13 @@ function EnglishGarden() {
           current,
           question.target.id,
           alphabetMode,
-          !questionHadMistake,
+          next.answers[next.index].firstTryCorrect,
           at,
         ),
       );
       return;
     }
 
-    setFeedback('wrong');
     const at = new Date().toISOString();
     setProgress((current) =>
       recordPracticeAnswer(
@@ -689,45 +704,43 @@ function EnglishGarden() {
         false,
       ),
     );
-    setQuestionHadMistake(true);
-    setWrongOptionIds((currentIds) =>
-      currentIds.includes(option.id) ? currentIds : [...currentIds, option.id],
-    );
     setAudioMessage('Chưa đúng. Bấm “Nghe chậm” rồi thử lại nhé.');
   }
 
   function nextQuestion() {
     stopSpeaking();
-    if (feedback !== 'correct' || testSession.current.completed) return;
+    if (
+      journeyOpen ||
+      screen !== 'test' ||
+      pendingNavigation ||
+      resetOpen ||
+      themePickerOpen
+    )
+      return;
+    const previous = testSession.current;
+    const next = advanceTestSession(
+      previous,
+      testRun.id,
+      question.target.id,
+    ) as TestSession;
+    if (next === previous) return;
+    updateTestRun(next);
 
-    if (round >= currentTestTotal) {
-      testSession.current.completed = true;
+    if (next.completed) {
       const entry = {
-        id: testSession.current.id,
+        id: next.id,
+        activity: 'test',
+        testPart: next.testPart,
         completedAt: new Date().toISOString(),
-        themeId: activeThemeId,
-        mode: alphabetMode,
-        answers: [...testSession.current.answers],
+        themeId: next.themeId,
+        mode: next.mode,
+        answers: next.answers,
       };
       setProgress((current) => recordCompletedTest(current, entry));
-      setTestComplete(true);
       setAudioMessage('Bài kiểm tra đã hoàn thành. Đây là điểm của bé!');
       return;
     }
 
-    const excludedIds = [...testedIds, question.target.id];
-    setQuestion(
-      createQuestion(
-        activeThemeId,
-        progress.learnedIds,
-        excludedIds,
-        alphabetMode,
-      ),
-    );
-    setFeedback('ready');
-    setWrongOptionIds([]);
-    setRound((currentRound) => currentRound + 1);
-    setQuestionHadMistake(false);
     setPreviewWordId(null);
     setAudioMessage('Một từ mới đã sẵn sàng. Hãy nghe thật kỹ.');
   }
@@ -750,30 +763,26 @@ function EnglishGarden() {
     setStudyDirty(false);
     progressReadFailed = false;
     setStorageError('');
-    restartTest(alphabetMode, []);
+    restartTest(alphabetMode, emptyProgress, 1);
     setGalleryPage(0);
     setResetOpen(false);
     setAudioMessage('Đã đặt lại tiến độ. Mình cùng học lại từ đầu nhé!');
   }
 
+  function updateTestRun(next: TestSession) {
+    // Synchronize immediately so rapid clicks cannot reuse stale React state.
+    testSession.current = next;
+    setTestRun(next);
+  }
+
   function restartTest(
     mode: AlphabetMode = alphabetMode,
-    learnedIds = progress.learnedIds,
+    currentProgress = progress,
+    part: TestPart = testPart,
+    themeId = activeThemeId,
   ) {
-    testSession.current = {
-      id: crypto.randomUUID(),
-      answers: [],
-      completed: false,
-    };
     stopSpeaking();
-    setQuestion(createQuestion(activeThemeId, learnedIds, [], mode));
-    setFeedback('ready');
-    setWrongOptionIds([]);
-    setRound(1);
-    setTestCorrect(0);
-    setQuestionHadMistake(false);
-    setTestedIds([]);
-    setTestComplete(false);
+    updateTestRun(createTestSession(themeId, part, currentProgress, mode));
     setPreviewWordId(null);
     setAudioMessage('Bài mới đã sẵn sàng. Bấm “Nghe từ” nhé!');
   }
@@ -783,24 +792,11 @@ function EnglishGarden() {
       return;
     }
 
-    testSession.current = {
-      id: crypto.randomUUID(),
-      answers: [],
-      completed: false,
-    };
-    stopSpeaking();
+    restartTest('name', progress, 1, value);
     setActiveThemeId(value);
     setAlphabetMode('name');
     setGalleryPage(0);
     setThemePickerOpen(false);
-    setQuestion(createQuestion(value, progress.learnedIds));
-    setFeedback('ready');
-    setWrongOptionIds([]);
-    setRound(1);
-    setTestCorrect(0);
-    setQuestionHadMistake(false);
-    setTestedIds([]);
-    setTestComplete(false);
     setPreviewWordId(null);
     setAudioMessage('Đã đổi chủ đề. Bấm “Nghe từ” để bắt đầu.');
   }
@@ -837,7 +833,7 @@ function EnglishGarden() {
 
   const feedbackText =
     feedback === 'correct'
-      ? (questionHadMistake ? 'Đúng rồi! ' : 'Chính xác, bé được 1 điểm! ') +
+      ? (questionHadMistake ? 'Đúng rồi! ' : 'Chính xác! ') +
         question.target.word +
         ' là ' +
         question.target.meaning +
@@ -1171,9 +1167,40 @@ function EnglishGarden() {
                 </div>
                 <span className="round-chip">
                   {testComplete
-                    ? 'Đã xong'
-                    : `Câu ${round}/${currentTestTotal}`}
+                    ? `Bài ${testPart} · Đã xong`
+                    : `Bài ${testPart} · Câu ${round}/${currentTestTotal}`}
                 </span>
+              </div>
+
+              <div
+                className="test-part-picker"
+                role="group"
+                aria-label="Chọn bài kiểm tra"
+              >
+                {([1, 2] as const).map((part) => (
+                  <Button
+                    key={part}
+                    aria-pressed={testPart === part}
+                    onClick={() => {
+                      if (part !== testPart)
+                        requestLeave(() =>
+                          restartTest(alphabetMode, progress, part),
+                        );
+                    }}
+                  >
+                    <span className="test-part-number" aria-hidden="true">
+                      {part}
+                    </span>
+                    <span>
+                      Bài {part} ·{' '}
+                      {Math.min(
+                        5,
+                        wordsForTestPart(activeThemeId, part).length,
+                      )}{' '}
+                      câu
+                    </span>
+                  </Button>
+                ))}
               </div>
 
               {activeThemeId === 'alphabet' && (
@@ -1224,7 +1251,9 @@ function EnglishGarden() {
                   <div className="score-sparkles" aria-hidden="true">
                     ✦ · ✧ · ✦
                   </div>
-                  <p className="score-kicker">Kết quả bài kiểm tra</p>
+                  <p className="score-kicker">
+                    Kết quả kiểm tra · Bài {testPart}
+                  </p>
                   <div className="score-stars" aria-hidden="true">
                     {scoreStars}
                   </div>
@@ -1237,14 +1266,30 @@ function EnglishGarden() {
                     Đúng {testCorrect}/{currentTestTotal} câu ngay lần chọn đầu
                     tiên
                   </p>
-                  <Button
-                    type="button"
-                    className="restart-test-button"
-                    onClick={() => restartTest()}
-                  >
-                    <span aria-hidden="true">↻</span>
-                    <span>Làm lại bài này</span>
-                  </Button>
+                  <div className="test-result-actions">
+                    <Button
+                      type="button"
+                      className="restart-test-button"
+                      onClick={() => restartTest()}
+                    >
+                      <RotateCcw size={20} aria-hidden="true" />
+                      <span>Làm lại</span>
+                    </Button>
+                    <Button
+                      type="button"
+                      className="restart-test-button other-test-button"
+                      onClick={() =>
+                        restartTest(
+                          alphabetMode,
+                          progress,
+                          testPart === 1 ? 2 : 1,
+                        )
+                      }
+                    >
+                      <span>Sang Bài {testPart === 1 ? 2 : 1}</span>
+                      <ArrowRight size={20} aria-hidden="true" />
+                    </Button>
+                  </div>
                 </section>
               )}
 
